@@ -1,0 +1,21 @@
+destination: state
+schema:
+  title: MockRefFieldBlacklist
+  description: This asset is used to test resolve field blacklist
+  type: object
+  properties:
+    blacklisted:
+      type: string
+      description: REF->MOCKINCIDENT
+    nested:
+      type: object
+      properties:
+        blacklisted_nest:
+          type: string
+          description: REF->MOCKINCIDENT
+      additionalProperties: false
+      required:
+        - blacklisted_nest
+  additionalProperties: false
+  required:
+    - blacklisted

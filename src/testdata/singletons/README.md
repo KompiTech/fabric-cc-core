@@ -1,0 +1,1 @@
+This directory contains mock singletons for self-test of cc-core

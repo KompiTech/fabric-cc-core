@@ -1,0 +1,9 @@
+destination: state
+schema:
+  title: MockBlogicFail
+  description: This asset always fails to get or update because of business logic
+  type: object
+  properties:
+    text:
+      type: string
+  additionalProperties: false

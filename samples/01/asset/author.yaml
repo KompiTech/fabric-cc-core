@@ -1,0 +1,11 @@
+destination: state
+schema:
+  title: Author
+  description: An author is a person
+  type: object
+  properties:
+    name:
+      type: string
+  required:
+    - name
+  additionalProperties: false

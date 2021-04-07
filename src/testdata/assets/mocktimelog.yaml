@@ -1,0 +1,25 @@
+destination: state
+schema:
+  title: MockTimelog
+  type: object
+  description: MockTimelog is an item lol
+  properties:
+    incident:
+      description: REF->MOCKINCIDENT Related Incident
+      type: string
+    expenses:
+      type: array
+      items:
+        type: object
+        properties:
+          description:
+            type: string
+          price:
+            type: number
+          attachment:
+            type: string
+            description: REF->MOCKUSER
+            # this is just for testing reference, it doesnt make business sense
+  required:
+    - incident
+  additionalProperties: false

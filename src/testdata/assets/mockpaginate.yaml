@@ -1,0 +1,9 @@
+destination: state
+schema:
+  title: MockPaginateTest
+  type: object
+  description: MockPaginateTest
+  properties:
+    description:
+      type: string
+  additionalProperties: false

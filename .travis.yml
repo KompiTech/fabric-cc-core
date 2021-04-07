@@ -1,0 +1,13 @@
+language: go
+go:
+- 1.14.x
+cache:
+  directories:
+  - "$HOME/.cache/go-build"
+  - "$HOME/gopath/pkg/mod"
+env:
+- GO111MODULE=on GOPRIVATE=github.com/KompiTech/* GONOSUMDB=github.com/cucumber/godog # TODO remove GOPRIVATE once public
+before_install:
+- git config --global url."git@github.com:KompiTech/".insteadOf "https://github.com/KompiTech/" # TODO remove once public
+script:
+- cd $TRAVIS_BUILD_DIR && make test

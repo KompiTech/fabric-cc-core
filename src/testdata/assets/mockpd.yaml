@@ -1,0 +1,4 @@
+destination: private_data
+schema:
+  type: object
+  additionalProperties: false

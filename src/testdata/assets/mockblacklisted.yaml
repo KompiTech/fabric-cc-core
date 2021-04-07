@@ -1,0 +1,11 @@
+destination: state
+schema:
+  title: MockBlacklisted
+  description: This asset is used to test resolve blacklist
+  type: object
+  properties:
+    text:
+      type: string
+  additionalProperties: false
+  required:
+    - text

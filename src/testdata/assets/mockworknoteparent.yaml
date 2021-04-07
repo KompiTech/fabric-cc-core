@@ -1,0 +1,13 @@
+destination: state
+schema:
+  title: MockWorkNoteParent
+  type: object
+  description: mockworknoteparent is stored in state
+  properties:
+    mockworknotes:
+      description: REF->MOCKWORKNOTE Worknotes attached to this
+      type: array
+      uniqueItems: true
+      items:
+        type: string
+  additionalProperties: false

@@ -1,0 +1,15 @@
+destination: private_data
+schema:
+  title: MockComment
+  type: object
+  description: mockcomment is stored in private data
+  properties:
+    text:
+      type: string
+      description: A comment text
+    entity:
+      type: string,
+      description: ENTITYREF
+  required:
+    - text
+  additionalProperties: false

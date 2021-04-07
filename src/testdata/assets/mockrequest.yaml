@@ -1,0 +1,14 @@
+destination: state
+schema:
+  title: MockRequest
+  type: object
+  description: Request for testing business logic
+  properties:
+    number:
+      description: Number of Request
+      type: string
+    overrides:
+      $ref: "#/definitions/overrides"
+  required:
+    - number
+  additionalProperties: false

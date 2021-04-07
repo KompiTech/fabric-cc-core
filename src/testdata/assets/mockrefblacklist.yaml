@@ -1,0 +1,12 @@
+destination: state
+schema:
+  title: MockRefBlacklist
+  description: This asset is used to test resolve blacklist
+  type: object
+  properties:
+    blacklisted:
+      type: string
+      description: REF->MOCKBLACKLISTED
+  additionalProperties: false
+  required:
+    - blacklisted

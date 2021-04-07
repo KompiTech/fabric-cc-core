@@ -1,0 +1,16 @@
+destination: state
+schema:
+  title: MockUser
+  type: object
+  description: An user data
+  properties:
+    name:
+      type: string
+      description: First name of user  
+    surname:
+      type: string
+      description: Surname of user
+  required:
+    - name
+    - surname
+  additionalProperties: false

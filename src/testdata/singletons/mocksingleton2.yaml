@@ -1,0 +1,6 @@
+value:
+  stringKey: hola2
+  floatKey: 1.0
+  objectKey:
+    brekeke: nested2
+  arrayKey: [ju2, hele2]

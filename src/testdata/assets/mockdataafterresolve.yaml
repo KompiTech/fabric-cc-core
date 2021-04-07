@@ -1,0 +1,9 @@
+destination: state
+schema:
+  title: MockDataAfterResolve
+  description: This asset is to test data passing to afterResolve
+  type: object
+  properties:
+    text:
+      type: string
+  additionalProperties: false

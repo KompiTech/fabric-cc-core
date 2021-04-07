@@ -1,0 +1,12 @@
+destination: state
+schema:
+  title: MockRefData
+  description: This asset is to test data passing to afterResolve
+  type: object
+  properties:
+    ref:
+      type: string
+      description: REF->MOCKDATAAFTERRESOLVE
+  additionalProperties: false
+  required:
+    - ref

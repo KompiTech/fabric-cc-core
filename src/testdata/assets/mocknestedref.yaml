@@ -1,0 +1,25 @@
+destination: state
+schema:
+  title: MockNestedref
+  type: object
+  description: MockNestedref is for testing nested refs
+  properties:
+    expenses:
+      type: array
+      items:
+        type: object
+        properties:
+          description:
+            type: string
+          price:
+            type: number
+          user:
+            type: string
+            description: REF->MOCKUSER
+            # this is just for testing reference, it doesnt make business sense
+        required:
+          - user
+        additionalProperties: false
+  required:
+    - expenses
+  additionalProperties: false

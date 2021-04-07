@@ -1,0 +1,19 @@
+destination: state
+schema:
+  title: Book
+  description: A book has name and at least one author
+  type: object
+  properties:
+    name:
+      type: string
+    authors:
+      description: REF->AUTHOR Author(s) of this book
+      type: array
+      minItems: 1
+      uniqueItems: true
+      items:
+        type: string
+  required:
+    - name
+    - authors
+  additionalProperties: false

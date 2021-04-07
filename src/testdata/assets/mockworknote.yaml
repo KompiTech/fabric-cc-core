@@ -1,0 +1,15 @@
+destination: state
+schema:
+  title: MockWorkNote
+  type: object
+  description: mockworknote is stored in state
+  properties:
+    text:
+      type: string
+      description: A worknote text
+    entity:
+      type: string
+      description: ENTITYREF
+  required:
+    - text
+  additionalProperties: false

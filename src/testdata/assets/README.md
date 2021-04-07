@@ -1,0 +1,1 @@
+This directory contains mock assets for self-test of cc-core

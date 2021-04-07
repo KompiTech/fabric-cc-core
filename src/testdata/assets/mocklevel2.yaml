@@ -1,0 +1,10 @@
+destination: state
+schema:
+  title: MockLevel2
+  description: This asset is used to test recursive resolve
+  type: object
+  properties:
+    level3:
+      type: string
+      description: REF->MOCKLEVEL3
+  additionalProperties: false
