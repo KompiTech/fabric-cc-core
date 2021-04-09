@@ -75,7 +75,7 @@ func identityHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Method: %s", r.Method)
 	switch method := r.Method; method {
 	case "POST":
-		//POST /identity/me
+		//POST /identities/me
 		if len(elems) != 0 {
 			err = fmt.Errorf("invalid request")
 		}
@@ -86,7 +86,7 @@ func identityHandler(w http.ResponseWriter, r *http.Request) {
 			err = fmt.Errorf("invalid request")
 		}
 	case "GET":
-		// GET /identity/me or /identity/<fingerprint>
+		// GET /identities/me or /identities/<fingerprint>
 		if urlPart == "me" {
 			args, err = identityMe(r)
 		} else {
@@ -94,11 +94,11 @@ func identityHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		invoke = false
 	case "PATCH":
-		//PATCH /identity/<fingerprint>
+		//PATCH /identities/<fingerprint>
 		args, err = identityUpdate(r, urlPart)
 		invoke = true
 	case "OPTIONS":
-		//OPTIONS /identity/
+		//OPTIONS /identities/
 		args, err = identityQuery(r, urlPart)
 		invoke = false
 	}

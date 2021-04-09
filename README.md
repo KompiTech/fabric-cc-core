@@ -8,5 +8,6 @@ Read **samples/README.md** and then try some example(s).
 
 Check the source tests in **src/**
 
+See available methods in METHODS.md
 
 

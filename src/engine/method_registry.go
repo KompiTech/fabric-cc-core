@@ -60,12 +60,13 @@ func registryListFrontend(ctx ContextInterface) (string, error) {
 
 func registryUpsertFrontend(ctx ContextInterface) (string, error) {
 	reg := ctx.Get(RegistryKey).(*Registry)
-	data, err := ctx.ParamBytes(DataParam)
+
+	name, err := ctx.ParamString(NameParam)
 	if err != nil {
 		return "", err
 	}
 
-	name, err := ctx.ParamString(NameParam)
+	data, err := ctx.ParamBytes(DataParam)
 	if err != nil {
 		return "", err
 	}
