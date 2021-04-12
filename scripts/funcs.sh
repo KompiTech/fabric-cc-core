@@ -65,8 +65,7 @@ function start_local {
 
 function stop_local {
   init_fabric_repo
-  rm -f ${PWD}/itsm_init.json
-  rm -rf ${PWD}/vendor/
+  rm -rf ${PWD}/itsm_init.json ${PWD}/collection_config.json ${PWD}/vendor/ ${PWD}/src/META-INF/
   cd ${FABRIC_SAMPLES}/test-network
   ./network.sh down
   cd -
