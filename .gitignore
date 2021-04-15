@@ -182,7 +182,7 @@ main
 micro-rest/micro-rest
 collection_config.json
 itsm_init.json
-src/META-INF
+pkg/META-INF
 
 samples/**/cc_init.json
 samples/**/collection_config.json

@@ -2,7 +2,7 @@
 
 function init_fabric_repo {
   if [[ -z "${FABRIC_SAMPLES}" ]]; then
-    echo "FABRIC_SAMPLES env variable is not defined. Set it to point to checked-out fabric-samples repository and try again"
+    echo "FABRIC_SAMPLES env variable is not defined. Do \"export FABRIC_SAMPLES=<path-to-repo>\" and try again."
     exit 1
   fi
 

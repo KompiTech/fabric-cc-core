@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/KompiTech/fabric-cc-core/v2/src/blogic/reusable"
-	. "github.com/KompiTech/fabric-cc-core/v2/src/engine"
+	"github.com/KompiTech/fabric-cc-core/v2/pkg/blogic/reusable"
+	. "github.com/KompiTech/fabric-cc-core/v2/pkg/engine"
 	"github.com/KompiTech/rmap"
 )
 
