@@ -3,7 +3,7 @@ module github.com/KompiTech/fabric-cc-core/v2
 go 1.14
 
 require (
-	github.com/KompiTech/rmap v1.13.0
+	github.com/KompiTech/rmap v1.14.0
 	github.com/casbin/casbin/v2 v2.26.1
 	github.com/evanphx/json-patch v4.9.0+incompatible // indirect
 	github.com/go-openapi/spec v0.20.3 // indirect
@@ -30,5 +30,3 @@ require (
 	google.golang.org/grpc v1.37.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
-
-replace github.com/KompiTech/rmap => /home/werk/Code/rmap
