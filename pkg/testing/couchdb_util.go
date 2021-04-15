@@ -40,7 +40,7 @@ func runCouch() {
 		CouchDBContainerImage,
 	}
 
-	errMsg := fmt.Sprintf("Unable to build %s image, try building it yourself \ncd `go list -f '{{.Dir}}' github.com/KompiTech/fabric-cc-core/v2/src`/testing_docker && docker build . -t couchdb_tmpfs && cd -", CouchDBContainerImage)
+	errMsg := fmt.Sprintf("Unable to build %s image, try building it yourself \ncd `go list -f '{{.Dir}}' github.com/KompiTech/fabric-cc-core/v2/pkg`/testing_docker && docker build . -t couchdb_tmpfs && cd -", CouchDBContainerImage)
 
 	cmd, _, serr := run("docker", runArgs...)
 	if !cmd.ProcessState.Success() {
@@ -48,7 +48,7 @@ func runCouch() {
 		log.Print("docker run stderr: " + serr.String())
 		log.Print("attempting to build image")
 
-		args := []string{"list", "-f", "{{.Dir}}", "github.com/KompiTech/fabric-cc-core/v2/src/"}
+		args := []string{"list", "-f", "{{.Dir}}", "github.com/KompiTech/fabric-cc-core/v2/pkg/"}
 		var sout *bytes.Buffer
 		cmd, sout, serr = run("go", args...)
 		if !cmd.ProcessState.Success() {
