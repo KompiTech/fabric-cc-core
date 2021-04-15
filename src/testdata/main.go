@@ -174,5 +174,6 @@ func GetConfiguration() Configuration {
 		RecursiveResolveWhitelist: getRecursiveResolveWhitelist(),
 		ResolveBlacklist:          getResolveBlacklist(),
 		ResolveFieldsBlacklist:    getResolveFieldsBlacklist(),
+		SchemaDefinitionCompatibility: "definitions",
 	}
 }

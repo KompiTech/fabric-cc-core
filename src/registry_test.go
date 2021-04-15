@@ -366,6 +366,7 @@ var _ = Describe("registry* method family tests", func() {
 				"mockreffieldblacklist": struct{}{},
 				"mockworknote":          struct{}{},
 				"mockworknoteparent":    struct{}{},
+				"mocklegacyschema": 	 struct{}{},
 			}
 			Expect(seen.Mapa).To(Equal(refMap))
 		})

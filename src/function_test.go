@@ -30,7 +30,7 @@ var _ = Describe("Builtin function tests", func() {
 
 		It("Should list all available permissions for SU", func() {
 			myAccess := tctx.Rmap("functionQuery", "myAccess", rmap.NewEmpty().Bytes())
-			allAssets := []string{"mockblacklisted", "mockdataafterresolve", "mockpaginate", "mockpd", "mockrefdata", "mockuser", "mockrefblacklist", "mockrequest", "mocklevel1", "mockincident", "mocklevel3", "mocknestedref", "mocktimelog", "mockblogicfail", "mockstate", "mockcomment", "mocklevel2", "mockreffieldblacklist", "mockworknote", "mockworknoteparent"}
+			allAssets := []string{"mockblacklisted", "mockdataafterresolve", "mockpaginate", "mockpd", "mockrefdata", "mockuser", "mockrefblacklist", "mockrequest", "mocklevel1", "mockincident", "mocklevel3", "mocknestedref", "mocktimelog", "mockblogicfail", "mockstate", "mockcomment", "mocklevel2", "mockreffieldblacklist", "mockworknote", "mockworknoteparent", "mocklegacyschema"}
 			allFuncs := []string{"MockStateInvalidUpdate", "MockPDInvalidCreate", "MockPDInvalidUpdate", "myAccess", "identityAccess", "MockFunc", "MockStateInvalidCreate", "upsertRegistries", "upsertSingletons"}
 
 			Expect(myAccess.Mapa).To(HaveKey("assets_create"))

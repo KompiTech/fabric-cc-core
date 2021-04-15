@@ -19,7 +19,6 @@ var _ = Describe("asset* method family tests", func() {
 		tctx = getDefaultTextContext()
 		tctx.InitOk(tctx.GetInit("testdata/assets", "").Bytes())
 		tctx.RegisterAllActors()
-
 	})
 
 	Describe("Call to CC method assetCreate", func() {
@@ -191,7 +190,7 @@ var _ = Describe("asset* method family tests", func() {
 					"description":          "lul",
 					"additional_assignees": []string{user1uuid, user1uuid},
 				})
-				tctx.Error(`reg.PutAsset() failed: asset.ValidateSchemaBytes() failed on assetName: mockincident`, "assetCreate", "mockincident", req.Bytes(), -1, "")
+				tctx.Error(`reg.PutAsset() failed: asset.ValidateSchema() failed on assetName: mockincident`, "assetCreate", "mockincident", req.Bytes(), -1, "")
 			})
 
 			It("Should return error if entityref is pointing to invalid asset", func() {
@@ -217,6 +216,12 @@ var _ = Describe("asset* method family tests", func() {
 			})
 		})
 
+		Context("When using pre draft-07 JSONSchema asset and compatibility enabled", func() {
+			It("Should transparently allow schema to work", func() {
+				tctx.Ok("assetCreate", "mocklegacyschema", rmap.NewFromMap(map[string]interface{}{"price": "0.91"}), -1, "")
+			})
+		})
+
 		It("Should return error if attempting to set service keys", func() {
 			req := rmap.NewFromMap(map[string]interface{}{
 				konst.AssetVersionKey: -5,
@@ -228,7 +233,7 @@ var _ = Describe("asset* method family tests", func() {
 
 		It("Should work with empty input", func() {
 			// schema error, NOT unmarshal error, working as intended
-			tctx.Error("reg.PutAsset() failed: asset.ValidateSchemaBytes() failed on assetName: mockincident", "assetCreate", "mockincident", "", -1, "")
+			tctx.Error("reg.PutAsset() failed: asset.ValidateSchema() failed on assetName: mockincident", "assetCreate", "mockincident", "", -1, "")
 		})
 	})
 
@@ -286,12 +291,12 @@ var _ = Describe("asset* method family tests", func() {
 		It("Should allow to migrate assets between versions", func() {
 			// attempt to create asset of version 2 with invalid data for schema
 			reqV1 := rmap.NewFromMap(map[string]interface{}{"description": "foobar"})
-			tctx.Error("reg.PutAsset() failed: asset.ValidateSchemaBytes() failed on assetName: mockincident", "assetCreate", "mockincident", reqV1.Bytes(), 2, "")
-			tctx.Error("reg.PutAsset() failed: asset.ValidateSchemaBytes() failed on assetName: mockincident", "assetCreate", "mockincident", reqV1.Bytes(), -1, "")
+			tctx.Error("reg.PutAsset() failed: asset.ValidateSchema() failed on assetName: mockincident", "assetCreate", "mockincident", reqV1.Bytes(), 2, "")
+			tctx.Error("reg.PutAsset() failed: asset.ValidateSchema() failed on assetName: mockincident", "assetCreate", "mockincident", reqV1.Bytes(), -1, "")
 
 			// attempt to create asset of version 1 with invalid data for schema
 			reqV2 := rmap.NewFromMap(map[string]interface{}{"short_description": "foobar"})
-			tctx.Error("reg.PutAsset() failed: asset.ValidateSchemaBytes() failed on assetName: mockincident", "assetCreate", "mockincident", reqV2.Bytes(), 1, "")
+			tctx.Error("reg.PutAsset() failed: asset.ValidateSchema() failed on assetName: mockincident", "assetCreate", "mockincident", reqV2.Bytes(), 1, "")
 
 			// create asset of version 1
 			v1ID := MustGetID(tctx.Rmap("assetCreate", "mockincident", reqV1.Bytes(), 1, ""))
@@ -305,10 +310,10 @@ var _ = Describe("asset* method family tests", func() {
 			tctx.Error("unable to migrate to the same version of asset", "assetMigrate", "mockincident", v1ID, rmap.NewEmpty().Bytes(), 1)
 
 			// attempt to migrate 1 -> 2 with empty patch must fail on schema validation
-			tctx.Error("reg.PutAsset() failed: asset.ValidateSchemaBytes() failed on assetName: mockincident", "assetMigrate", "mockincident", v1ID, rmap.NewEmpty().Bytes(), 2)
+			tctx.Error("reg.PutAsset() failed: asset.ValidateSchema() failed on assetName: mockincident", "assetMigrate", "mockincident", v1ID, rmap.NewEmpty().Bytes(), 2)
 
 			// attempt to migrate 2 -> 1 with empty patch must fail on schema validation
-			tctx.Error("reg.PutAsset() failed: asset.ValidateSchemaBytes() failed on assetName: mockincident", "assetMigrate", "mockincident", v2ID, rmap.NewEmpty().Bytes(), 1)
+			tctx.Error("reg.PutAsset() failed: asset.ValidateSchema() failed on assetName: mockincident", "assetMigrate", "mockincident", v2ID, rmap.NewEmpty().Bytes(), 1)
 
 			// migrate 1 -> 2 (-1 is synonymous for latest), remove description, add short_description
 			migrateV1V2 := rmap.NewFromMap(map[string]interface{}{

@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"bytes"
 	"fmt"
 	"sort"
 	"strconv"
@@ -679,9 +680,44 @@ func (r *Registry) putAsset(asset Rmap, isCreate bool, skipWalkReferences bool) 
 		}
 	}
 
+	oldDefsKey := r.ctx.GetConfiguration().SchemaDefinitionCompatibility
+
+	if oldDefsKey != "" && oldDefsKey != SchemaDefinitionsKey {
+		// if SchemaDefinitionCompatibility is set to same value as $defs, it is obvious error and do not replace anything
+		// handle compat with pre draft-07 schemas, if enabled
+		// first step - replace legacy definitions target to proper $defs form
+		template := "#/%s/"
+
+		old := []byte(fmt.Sprintf(template, oldDefsKey))
+		new := []byte(fmt.Sprintf(template, SchemaDefinitionsKey))
+
+		// replacement is done on bytes form
+		schemaBytes := bytes.Replace(schema.Bytes(), old, new, -1)
+
+		schema, err = NewFromBytes(schemaBytes)
+		if err != nil {
+			return err
+		}
+
+		// second step - add any legacy definitions to $defs already containing injected global definitions
+		oldDefsI, exists := schema.Mapa[oldDefsKey]
+		if exists {
+			legacyDefs, err := NewFromInterface(oldDefsI)
+			if err != nil {
+				return err
+			}
+
+			delete(schema.Mapa, oldDefsKey)
+
+			if err := schema.Inject(SchemaDefinitionsJPtr, legacyDefs); err != nil {
+				return err
+			}
+		}
+	}
+
 	// validate JSON schema
-	if err := asset.ValidateSchemaBytes(schema.Bytes()); err != nil {
-		return errors.Wrapf(err, "asset.ValidateSchemaBytes() failed on assetName: %s", name)
+	if err := asset.ValidateSchema(schema); err != nil {
+		return errors.Wrapf(err, "asset.ValidateSchema() failed on assetName: %s", name)
 	}
 
 	if !skipWalkReferences {

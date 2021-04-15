@@ -17,4 +17,13 @@ type Configuration struct {
 	ResolveFieldsBlacklist    rmap.Rmap        // Rmap of asset name -> list of fields to not resolve
 	CurrentIDFunc             IDFunc           // Function to get identity fingerprint
 	PreviousIDFunc            *IDFunc          // Previous function to get identity fingerprint when migration is desired
+
+	// SchemaDefinitionCompatibility is legacy setting, to allow the chaincode to work with older JSONSchemas (draft-07 and older) that are using reusable definitions.
+	// Previously, any location for the definitions can be used, but JSONSchema newer than draft-07 allows only "$defs" key to be used.
+	// To allow chaincode to work with these older schemas, set the value of SchemaDefinitionCompatibility member to name under which the definitions are stored in schema.
+	// Chaincode will then convert its key to standard $defs key to allow use of newer JSONSchema library.
+	// These replacements are done only at runtime and not persisted anywhere.
+	// If SchemaDefinitionCompatibility is empty string, then no replacements are done.
+	// This is the default setting, as the issue only occurs with legacy schemas.
+	SchemaDefinitionCompatibility string
 }

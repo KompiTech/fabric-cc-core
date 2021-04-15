@@ -70,7 +70,8 @@ const (
 
 	StateDestinationValue = "state" // value of destination that is considered state
 
-	SchemaDefinitionsJPtr          = "/$defs" // json pointer of definitions inside JSONSchema
+	SchemaDefinitionsKey = "$defs"
+	SchemaDefinitionsJPtr          = "/" + SchemaDefinitionsKey // json pointer of definitions inside JSONSchema
 	SchemaPropertiesJPtr           = "/properties"  // json pointer of properties inside JSONSchema
 	SchemaRequiredKey              = "required"                     // key in schema containing required properties
 	SchemaTypeJPtr                 = "/schema/type"                 // jptr for root schema type
