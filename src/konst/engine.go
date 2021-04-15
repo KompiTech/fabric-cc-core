@@ -9,7 +9,6 @@ const (
 	ChangelogItemPrefix = "XXXCHANGELOG" // prefix for changelog key
 
 	IdentityAssetKeyPrefix = "IDENTITY" // prefix for identity key
-	RoleAssetKeyPrefix     = "ROLE"     // prefix for role key
 
 	InitSuperuserStateKey = "INIT_MANAGER"                         // state key with initial superuser's fingerprint
 	SuperuserRoleUUID     = "a00a1f64-01a1-4153-b22e-35cf7026ba7e" // magic UUID for Superuser role (must match KompiGuard model!)
@@ -71,19 +70,13 @@ const (
 
 	StateDestinationValue = "state" // value of destination that is considered state
 
-	SchemaDefinitionsJPtr          = "/definitions" // json pointer of definitions inside JSONSchema
+	SchemaDefinitionsJPtr          = "/$defs" // json pointer of definitions inside JSONSchema
 	SchemaPropertiesJPtr           = "/properties"  // json pointer of properties inside JSONSchema
-	SchemaPropertiesKey            = "properties"
-	SchemaDescriptionJPtr          = "/description"
 	SchemaRequiredKey              = "required"                     // key in schema containing required properties
 	SchemaTypeJPtr                 = "/schema/type"                 // jptr for root schema type
 	SchemaAdditionalPropertiesJPtr = "/schema/additionalProperties" // jptr for additionalProperties attribute of schema
-	SchemaStringType               = "string"                       // string type in JSONSchema
-	SchemaObjectType               = "object"                       // object type in JSONSchema
-	SchemaArrayItemsTypeJPtr       = "/items/type"                  // JSONPtr for type of items in array
 
 	RegistryKey = "registry" // key in context that contains *Registry
-	EngineKey   = "engine"   // key in context that contains Engine
 
 	PageSize = 10 // size of returned array in query operations
 
@@ -116,7 +109,7 @@ func ServiceKeys() []string {
 	return []string{AssetVersionKey, AssetIdKey, AssetDocTypeKey}
 }
 
-// builtin schema for registry item
+// RegistryItemSchema is builtin schema for registry item
 const RegistryItemSchema = `{
   "description": "A definition of single asset type",
   "properties": {
@@ -136,7 +129,7 @@ const RegistryItemSchema = `{
   "additionalProperties": false
 }`
 
-// builtin schema for singleton
+// SingletonItemSchema is builtin schema for singleton
 const SingletonItemSchema = `{
   "description": "A definition of singleton",
   "properties": {
@@ -151,7 +144,7 @@ const SingletonItemSchema = `{
   "additionalProperties": false
 }`
 
-// hardcoded schema for identity asset WITH ALL KEYS (do not inject service keys here)
+// IdentitySchema is hardcoded schema for identity asset WITH ALL KEYS (do not inject service keys here)
 // additionalProperties is set to true to allow extension of identity with custom data for applications
 const IdentitySchema = `{
   "description": "Identity stores data related to current user's identity",
@@ -187,7 +180,7 @@ const IdentitySchema = `{
     "overrides": {
       "description": "Overrides for this Identity",
       "type": "array",
-      "items": { "$ref": "#/definitions/override" }
+      "items": { "$ref": "#/$defs/override" }
     },
     "is_enabled": {
       "description": "If this is set to false, this identity cannot access anything",
@@ -204,7 +197,7 @@ const IdentitySchema = `{
   "additionalProperties": true
 }`
 
-// builtin schema for role asset WITHOUT SERVICE KEYS
+// RoleSchema is builtin schema for role asset
 const RoleSchema = `{
   "description": "Role stores grants and overrides",
   "type": "object",
@@ -213,8 +206,8 @@ const RoleSchema = `{
       "description": "Name of the role",
       "type": "string"
     },
-    "grants": { "$ref": "#/definitions/grants" },
-    "overrides": { "$ref": "#/definitions/overrides" }
+    "grants": { "$ref": "#/$defs/grants" },
+    "overrides": { "$ref": "#/$defs/overrides" }
   },
   "required": [
     "name"
@@ -222,12 +215,12 @@ const RoleSchema = `{
   "additionalProperties": false
 }`
 
-// SchemaDefinitions are reusable JSONSchema definitions injected to every JSONSchema under key "definitions".
+// SchemaDefinitions are reusable JSONSchema definitions injected to every JSONSchema under key "$defs".
 const SchemaDefinitions = `{
   "uuid": {
     "description": "UUID identifier",
     "type": "string",
-    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
   },
   "fingerprint": {
     "description": "Fingerprint of some Identity",
@@ -252,8 +245,8 @@ const SchemaDefinitions = `{
     "description": "Grant of some action on some object. Effect is always implicitly grant.",
     "type": "object",
     "properties": {
-      "object": { "$ref": "#/definitions/object" },
-      "action": { "$ref": "#/definitions/action" }
+      "object": { "$ref": "#/$defs/object" },
+      "action": { "$ref": "#/$defs/action" }
     },
     "required": [
       "object", "action"
@@ -263,9 +256,9 @@ const SchemaDefinitions = `{
   "override": {
     "type": "object",
     "properties": {
-      "action": { "$ref": "#/definitions/action" },
-      "effect": { "$ref": "#/definitions/effect" },
-      "subject": { "$ref": "#/definitions/fingerprint" }
+      "action": { "$ref": "#/$defs/action" },
+      "effect": { "$ref": "#/$defs/effect" },
+      "subject": { "$ref": "#/$defs/fingerprint" }
     },
     "required": [
       "action", "subject", "effect"
@@ -275,12 +268,12 @@ const SchemaDefinitions = `{
   "grants": {
     "description": "Array of grants",
     "type": "array",
-    "items": { "$ref": "#/definitions/grant" }
+    "items": { "$ref": "#/$defs/grant" }
   },
   "overrides": {
     "description": "Array of overrides",
     "type": "array",
-    "items": { "$ref": "#/definitions/override" }
+    "items": { "$ref": "#/$defs/override" }
   },
   "entity": {
     "description": "Specification of target entity, format <name>:<uuid>",
@@ -289,9 +282,9 @@ const SchemaDefinitions = `{
   }
 }`
 
-// ServiceKeyJSONSchema is part of the schema for validating service keys. It must be injected programatically into existing schema "properties" key. Keys must match to those above!!!
+// SchemaServiceKeys is part of the schema for validating service keys. It must be injected into existing schema's "properties" key.
 const SchemaServiceKeys = `{
-  "uuid": { "$ref": "#/definitions/uuid" },
+  "uuid": { "$ref": "#/$defs/uuid" },
   "xxx_version": {
     "type": "integer",
     "minimum": 1
@@ -302,7 +295,7 @@ const SchemaServiceKeys = `{
   }
 }`
 
-// schema for Init data
+// InstantiateJSONSchema is builtin schema for Init data
 const InstantiateJSONSchema = `{
   "description": "A definition of this chaincode configuration",
   "properties": {

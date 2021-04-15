@@ -8,7 +8,7 @@ schema:
       description: Number of Request
       type: string
     overrides:
-      $ref: "#/definitions/overrides"
+      $ref: "#/$defs/overrides"
   required:
     - number
   additionalProperties: false
