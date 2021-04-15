@@ -1,0 +1,16 @@
+destination: state
+schema:
+  title: MockLegacySchema
+  type: object
+  description: test for legacy schema migration
+  definitions:
+    price:
+      description: digits with an optional decimal point as a separator
+      type: string
+      pattern: "^[0-9][0-9]*([.][0-9]+)?$"
+  properties:
+    price:
+      $ref: "#/definitions/price"
+  required:
+    - price
+  additionalProperties: false

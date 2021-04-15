@@ -4,7 +4,7 @@ import (
 	"crypto/x509"
 	"log"
 
-	. "github.com/KompiTech/fabric-cc-core/v2/src/engine"
+	. "github.com/KompiTech/fabric-cc-core/v2/pkg/engine"
 	"github.com/KompiTech/rmap"
 )
 

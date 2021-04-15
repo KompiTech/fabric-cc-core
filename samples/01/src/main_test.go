@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	. "github.com/KompiTech/fabric-cc-core/v2/src/testing"
+	. "github.com/KompiTech/fabric-cc-core/v2/pkg/testing"
 	"github.com/KompiTech/rmap"
 
 	. "github.com/onsi/ginkgo"
