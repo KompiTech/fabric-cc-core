@@ -200,7 +200,7 @@ func (r Registry) GetThisIdentity() (Rmap, error) {
 		return Rmap{}, ErrorBadRequest(fmt.Sprintf("cannot get identity for fingerprint: %s. Did you call identityAddMe?", myFP))
 	}
 
-	return thisIdentity, ni
+	return thisIdentity, nil
 }
 
 // GetThisIdentityResolved returns identity asset for current user and resolves all roles it has
