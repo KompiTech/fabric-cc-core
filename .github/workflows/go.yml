@@ -19,9 +19,7 @@ jobs:
         go-version: 1.14
     - name: Set Up for tests
       run: |
-        mkdir -p ~/.ssh/
-        echo "$GITHUB_PRIVATE_KEY" > ~/.ssh/id_rsa
-        sudo chmod 600 ~/.ssh/id_rsa
+        ssh-add - <<< "${{ secrets.DO_GITHUB_PRIVATE_KEY }}"
         git config --global url."git@github.com:KompiTech/".insteadOf "https://github.com/KompiTech/"
         echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
     - name: Test
