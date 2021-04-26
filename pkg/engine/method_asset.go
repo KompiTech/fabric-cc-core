@@ -106,7 +106,7 @@ func assetGetBackend(ctx ContextInterface, name, id string, resolve bool, data s
 }
 
 func assetUpdateBackend(ctx ContextInterface, name, id string, patchBytes string, isDirect bool) (string, error) {
-	// load jsonpatch
+	// load json patch
 	patch, err := rmap.NewFromString(patchBytes)
 	if err != nil {
 		return "", errors.Wrap(err, "rmap.NewFromBytes() failed")

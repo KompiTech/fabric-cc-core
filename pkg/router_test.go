@@ -17,15 +17,15 @@ var _ = Describe("router tests", func() {
 
 	Describe("Invalid method name", func() {
 		It("Should return error - prefix", func() {
-			tctx.Error("Invalid function blablaAssetGet passed", "blablaAssetGet")
+			tctx.Error("invalid function blablaAssetGet passed", "blablaAssetGet")
 		})
 
 		It("Should return error - middle of string", func() {
-			tctx.Error("Invalid function assetXXXXGet passed", "assetXXXXGet")
+			tctx.Error("invalid function assetXXXXGet passed", "assetXXXXGet")
 		})
 
 		It("Should return error - suffix", func() {
-			tctx.Error("Invalid function assetGetXXXXX passed", "assetGetXXXXX")
+			tctx.Error("invalid function assetGetXXXXX passed", "assetGetXXXXX")
 		})
 	})
 

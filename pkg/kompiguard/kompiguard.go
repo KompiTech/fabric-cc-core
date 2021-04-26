@@ -29,7 +29,7 @@ func New() (KompiGuard, error) {
 	return KompiGuard{enf}, nil
 }
 
-// Loads roles from identity asset into enforcer
+// LoadRoles loads roles from identity asset into enforcer
 // identityAsset must be resolved
 func (k KompiGuard) LoadRoles(thisIdentity rmap.Rmap) error {
 	isEnabled, err := thisIdentity.GetBool(IsEnabledKey)
@@ -189,11 +189,11 @@ func (k KompiGuard) EnforceAsset(asset, thisIdentity rmap.Rmap, action string) (
 }
 
 // EnforceCustom checks if enforcer allows action on object for subject
-// if asset argument is present, overrides are loaded from it, if present
+// if asset argument is present, overrides are loaded from it
 // returns (granted, reason, error)
 // granted - true or false if operation was granted
 // reason - if granted == false && err != nil then it contains which permission is required for action to be granted
-// error - some error has occured
+// error - some other error has occurred
 func (k KompiGuard) EnforceCustom(object, subject, action string, asset *rmap.Rmap) (bool, string, error) {
 	action = strings.ToLower(action)
 

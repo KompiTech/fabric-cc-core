@@ -8,7 +8,7 @@ import (
 // route calls appropriate frontend method and returns result, of returns error if name is not valid
 func route(ctx ContextInterface) (string, error) {
 	fcn, args := ctx.GetStub().GetFunctionAndParameters()
-	uerr := fmt.Errorf("Invalid function %s passed with args %v", fcn, args)
+	uerr := fmt.Errorf("invalid function %s passed with args %v", fcn, args)
 	var ret string
 	var err error
 
