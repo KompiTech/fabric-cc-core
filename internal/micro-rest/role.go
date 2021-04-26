@@ -1,4 +1,4 @@
-package main
+package micro_rest
 
 import (
 	"fmt"
@@ -63,7 +63,7 @@ func roleQuery(r *http.Request, urlPart string) ([]string, error) {
 	return []string{"roleQuery", string(bodyBytes)}, nil
 }
 
-func roleHandler(w http.ResponseWriter, r *http.Request) {
+func RoleHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		log.Print(err)
 		return

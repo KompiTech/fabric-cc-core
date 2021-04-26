@@ -1,4 +1,4 @@
-package main
+package micro_rest
 
 import (
 	"fmt"
@@ -62,7 +62,7 @@ func identityQuery(r *http.Request, urlPart string) ([]string, error) {
 	return []string{"identityQuery", string(bodyBytes), resolve}, nil
 }
 
-func identityHandler(w http.ResponseWriter, r *http.Request) {
+func IdentityHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		log.Print(err)
 		return

@@ -1,4 +1,4 @@
-package main
+package collgen
 
 import (
 	"encoding/json"

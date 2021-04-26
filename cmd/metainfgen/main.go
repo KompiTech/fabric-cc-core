@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"log"
+
+	"github.com/KompiTech/fabric-cc-core/v2/internal/metainfgen"
 )
 
 func main() {
@@ -19,7 +21,7 @@ func main() {
 		log.Fatal("outputDir is mandatory argument")
 	}
 
-	metaInfGen := New(*registryDir, *outputDir)
+	metaInfGen := metainfgen.New(*registryDir, *outputDir)
 	if err := metaInfGen.Generate(); err != nil {
 		log.Fatal(err)
 	}

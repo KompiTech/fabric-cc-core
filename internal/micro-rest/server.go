@@ -1,4 +1,4 @@
-package main
+package micro_rest
 
 import (
 	"errors"
@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"strconv"
 	"strings"
 
 	"github.com/KompiTech/rmap"
@@ -164,26 +163,4 @@ func handleBackend(args []string, invoke bool, r *http.Request, w http.ResponseW
 	if _, err := fmt.Fprint(w, beOutput); err != nil {
 		log.Print(err)
 	}
-}
-
-func main() {
-	if len(os.Args) != 2 {
-		log.Fatal("Usage: %s <port>", os.Args[0])
-	} else {
-		var err error
-		port, err = strconv.Atoi(os.Args[1])
-		if err != nil {
-			log.Print(err)
-		}
-	}
-	http.HandleFunc("/api/v1/identities/", identityHandler)
-	http.HandleFunc("/api/v1/registries/", registryHandler)
-	http.HandleFunc("/api/v1/assets/", assetHandler)
-	http.HandleFunc("/api/v1/roles/", roleHandler)
-	http.HandleFunc("/api/v1/functions-query/", functionHandler)
-	http.HandleFunc("/api/v1/functions-invoke/", functionHandler)
-	http.HandleFunc("/api/v1/singletons/", singletonHandler)
-	http.HandleFunc("/api/v1/histories/", historyHandler)
-	log.Printf("Listening at 0.0.0.0:%d...", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
 }

@@ -30,18 +30,18 @@ function init_fabric_repo {
 }
 
 function gen_collection_config {
-  go run ../../tools/cmd/collgen/*.go -registryDir ${PWD}/asset -templateFile ${PWD}/../../templates/collection_config_template.yaml > ${PWD}/collection_config.json
+  go run ../../cmd/collgen/*.go -registryDir ${PWD}/asset -templateFile ${PWD}/../../templates/collection_config_template.yaml > ${PWD}/collection_config.json
 }
 
 function gen_cc_init {
   # Generates chaincode init data to a file cc_init.json. It contains all currently available registry items and singletons except blacklisted ones.
-  go run ../../tools/cmd/initgen/*.go -registryDir ${PWD}/asset -singletonDir ${PWD}/singleton -singletonBlacklist org_roles,identity_public_key > ${PWD}/cc_init.json
+  go run ../../cmd/initgen/*.go -registryDir ${PWD}/asset -singletonDir ${PWD}/singleton -singletonBlacklist org_roles,identity_public_key > ${PWD}/cc_init.json
 }
 
 function gen_cc_metainf {
   # Generates couchDB index metadata in src/META-INF subdir. They are necessary for both chaincode operation and tests also use them.
   rm -Rf ${PWD}/src/META-INF
-  go run ../../tools/cmd/metainfgen/*.go -registryDir ${PWD}/asset -outputDir ${PWD}/src/META-INF
+  go run ../../cmd/metainfgen/*.go -registryDir ${PWD}/asset -outputDir ${PWD}/src/META-INF
 }
 
 function cc_init {
@@ -73,5 +73,5 @@ function stop_local {
 
 function start_rest {
   init_fabric_repo
-  go run ${PWD}/../../micro-rest/*.go 10000
+  go run ${PWD}/../../cmd/micro-rest/*.go 10000
 }

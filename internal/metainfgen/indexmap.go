@@ -1,4 +1,4 @@
-package main
+package metainfgen
 
 import "github.com/KompiTech/rmap"
 

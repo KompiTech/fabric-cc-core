@@ -1,4 +1,4 @@
-package main
+package micro_rest
 
 import (
 	"fmt"
@@ -50,7 +50,7 @@ func registryList(r *http.Request, urlPart string) ([]string, error) {
 	return []string{"registryList"}, nil
 }
 
-func registryHandler(w http.ResponseWriter, r *http.Request) {
+func RegistryHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		log.Print(err)
 		return

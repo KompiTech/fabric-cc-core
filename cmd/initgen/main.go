@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/KompiTech/fabric-cc-core/v2/internal/initgen"
 	"github.com/KompiTech/rmap"
 )
 
@@ -31,6 +32,6 @@ func main() {
 		singletonBlacklist = rmap.NewFromStringSlice(strings.Split(strings.Replace(*singletonBlacklistStr, " ", "", -1), ","))
 	}
 
-	initGen := New(*registryDir, *singletonDir, singletonBlacklist, os.Stdout)
+	initGen := initgen.New(*registryDir, *singletonDir, singletonBlacklist, os.Stdout)
 	initGen.Visit()
 }

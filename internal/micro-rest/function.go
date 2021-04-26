@@ -1,4 +1,4 @@
-package main
+package micro_rest
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func functionHandler(w http.ResponseWriter, r *http.Request) {
+func FunctionHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		log.Print(err)
 		return

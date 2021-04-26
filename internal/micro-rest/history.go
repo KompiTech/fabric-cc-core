@@ -1,4 +1,4 @@
-package main
+package micro_rest
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ func historyGet(r *http.Request, urlPart string) ([]string, error) {
 	return []string{"assetHistory", assetName, uuid}, nil
 }
 
-func historyHandler(w http.ResponseWriter, r *http.Request) {
+func HistoryHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		log.Print(err)
 		return

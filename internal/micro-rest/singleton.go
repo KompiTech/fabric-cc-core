@@ -1,4 +1,4 @@
-package main
+package micro_rest
 
 import (
 	"fmt"
@@ -43,7 +43,7 @@ func singletonGet(r *http.Request, urlPart string) ([]string, error) {
 	return []string{"singletonGet", name, fmt.Sprintf("%d", version)}, nil
 }
 
-func singletonHandler(w http.ResponseWriter, r *http.Request) {
+func SingletonHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		log.Print(err)
 		return
