@@ -1,16 +1,16 @@
 package testdata
 
 import (
+	mockblogicfail2 "github.com/KompiTech/fabric-cc-core/v2/internal/testdata/mock_blogic/mockblogicfail"
+	mockdataafterresolve2 "github.com/KompiTech/fabric-cc-core/v2/internal/testdata/mock_blogic/mockdataafterresolve"
+	mockpaginate2 "github.com/KompiTech/fabric-cc-core/v2/internal/testdata/mock_blogic/mockpaginate"
+	mockrequest2 "github.com/KompiTech/fabric-cc-core/v2/internal/testdata/mock_blogic/mockrequest"
+	mocktimelog2 "github.com/KompiTech/fabric-cc-core/v2/internal/testdata/mock_blogic/mocktimelog"
+	mockworknote2 "github.com/KompiTech/fabric-cc-core/v2/internal/testdata/mock_blogic/mockworknote"
+	mockerror2 "github.com/KompiTech/fabric-cc-core/v2/internal/testdata/mock_flogic/mockerror"
+	mockfunc2 "github.com/KompiTech/fabric-cc-core/v2/internal/testdata/mock_flogic/mockfunc"
 	. "github.com/KompiTech/fabric-cc-core/v2/pkg/blogic/reusable"
 	. "github.com/KompiTech/fabric-cc-core/v2/pkg/engine"
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testdata/mock_blogic/mockblogicfail"
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testdata/mock_blogic/mockdataafterresolve"
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testdata/mock_blogic/mockpaginate"
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testdata/mock_blogic/mockrequest"
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testdata/mock_blogic/mocktimelog"
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testdata/mock_blogic/mockworknote"
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testdata/mock_flogic/mockerror"
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testdata/mock_flogic/mockfunc"
 	"github.com/KompiTech/rmap"
 )
 
@@ -21,7 +21,7 @@ func getBusinessLogicPolicy() BusinessExecutor {
 
 	bexec.SetPolicy(FuncKey{Name: "mockdataafterresolve", Version: 1}, map[Stage][]BusinessPolicyMember{
 		AfterResolve: {
-			mockdataafterresolve.TestPassing,
+			mockdataafterresolve2.TestPassing,
 		},
 	})
 
@@ -43,19 +43,19 @@ func getBusinessLogicPolicy() BusinessExecutor {
 	bexec.SetPolicy(FuncKey{Name: "mockrequest", Version: 1}, map[Stage][]BusinessPolicyMember{
 		AfterGet: {
 			EnforceRead,
-			mockrequest.AfterGetCheck,
+			mockrequest2.AfterGetCheck,
 		},
 		FirstCreate: {
 			EnforceCreate,
 		},
 		BeforeCreate: {
-			mockrequest.UniqueNumber,
+			mockrequest2.UniqueNumber,
 		},
 		FirstUpdate: {
 			EnforceUpdate,
 		},
 		BeforeUpdate: {
-			mockrequest.ImmutableFields,
+			mockrequest2.ImmutableFields,
 		},
 		AfterQuery: {
 			FilterRead,
@@ -67,55 +67,55 @@ func getBusinessLogicPolicy() BusinessExecutor {
 			EnforceCreate,
 		},
 		AfterCreate: {
-			mocktimelog.AttachToMockIncident,
+			mocktimelog2.AttachToMockIncident,
 		},
 	})
 
 	bexec.SetPolicy(FuncKey{Name: "mockblogicfail", Version: 1}, map[Stage][]BusinessPolicyMember{
 		FirstCreate: {
-			mockblogicfail.Fail,
+			mockblogicfail2.Fail,
 		},
 		AfterQuery: {
-			mockblogicfail.Fail,
+			mockblogicfail2.Fail,
 		},
 		AfterCreate: {
-			mockblogicfail.Fail,
+			mockblogicfail2.Fail,
 		},
 		PatchCreate: {
-			mockblogicfail.Fail,
+			mockblogicfail2.Fail,
 		},
 		PatchUpdate: {
-			mockblogicfail.Fail,
+			mockblogicfail2.Fail,
 		},
 		BeforeUpdate: {
-			mockblogicfail.Fail,
+			mockblogicfail2.Fail,
 		},
 		AfterUpdate: {
-			mockblogicfail.Fail,
+			mockblogicfail2.Fail,
 		},
 		AfterGet: {
-			mockblogicfail.Fail,
+			mockblogicfail2.Fail,
 		},
 		BeforeDelete: {
-			mockblogicfail.Fail,
+			mockblogicfail2.Fail,
 		},
 	})
 
 	bexec.SetPolicy(FuncKey{Name: "mockblogicfail", Version: -1}, map[Stage][]BusinessPolicyMember{
 		BeforeQuery: {
-			mockblogicfail.Fail,
+			mockblogicfail2.Fail,
 		},
 	})
 
 	bexec.SetPolicy(FuncKey{Name: "mockpaginate", Version: 1}, map[Stage][]BusinessPolicyMember{
 		BeforeCreate: {
-			mockpaginate.Paginate,
+			mockpaginate2.Paginate,
 		},
 	})
 
 	bexec.SetPolicy(FuncKey{Name: "mockworknote", Version: 1}, map[Stage][]BusinessPolicyMember{
 		BeforeCreate: {
-			mockworknote.AttachToEntity,
+			mockworknote2.AttachToEntity,
 		},
 	})
 
@@ -126,23 +126,23 @@ func getFunctionLogicPolicy() FunctionExecutor {
 	fexec := NewFunctionExecutor()
 
 	fexec.SetPolicy("MockFunc", []FunctionPolicyMember{
-		mockfunc.MockFunc,
+		mockfunc2.MockFunc,
 	})
 
 	fexec.SetPolicy("MockStateInvalidCreate", []FunctionPolicyMember{
-		mockerror.MockStateInvalidCreate,
+		mockerror2.MockStateInvalidCreate,
 	})
 
 	fexec.SetPolicy("MockStateInvalidUpdate", []FunctionPolicyMember{
-		mockerror.MockStateInvalidUpdate,
+		mockerror2.MockStateInvalidUpdate,
 	})
 
 	fexec.SetPolicy("MockPDInvalidCreate", []FunctionPolicyMember{
-		mockerror.MockPDInvalidCreate,
+		mockerror2.MockPDInvalidCreate,
 	})
 
 	fexec.SetPolicy("MockPDInvalidUpdate", []FunctionPolicyMember{
-		mockerror.MockPDInvalidUpdate,
+		mockerror2.MockPDInvalidUpdate,
 	})
 
 	return *fexec
@@ -169,11 +169,11 @@ func getResolveFieldsBlacklist() rmap.Rmap {
 
 func GetConfiguration() Configuration {
 	return Configuration{
-		BusinessExecutor:          getBusinessLogicPolicy(),
-		FunctionExecutor:          getFunctionLogicPolicy(),
-		RecursiveResolveWhitelist: getRecursiveResolveWhitelist(),
-		ResolveBlacklist:          getResolveBlacklist(),
-		ResolveFieldsBlacklist:    getResolveFieldsBlacklist(),
+		BusinessExecutor:              getBusinessLogicPolicy(),
+		FunctionExecutor:              getFunctionLogicPolicy(),
+		RecursiveResolveWhitelist:     getRecursiveResolveWhitelist(),
+		ResolveBlacklist:              getResolveBlacklist(),
+		ResolveFieldsBlacklist:        getResolveFieldsBlacklist(),
 		SchemaDefinitionCompatibility: "definitions",
 	}
 }

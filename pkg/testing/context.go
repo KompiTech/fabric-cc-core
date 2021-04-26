@@ -9,46 +9,47 @@ import (
 	"strings"
 	"time"
 
+	examplecert2 "github.com/KompiTech/fabric-cc-core/v2/internal/examplecert"
+	"github.com/KompiTech/fabric-cc-core/v2/internal/testing"
 	"github.com/KompiTech/fabric-cc-core/v2/pkg/engine"
 	. "github.com/KompiTech/fabric-cc-core/v2/pkg/konst"
 	. "github.com/KompiTech/rmap"
 	. "github.com/onsi/gomega"
 
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testing/examplecert"
 	expectcc "github.com/KompiTech/fabric-cc-core/v2/pkg/testing/expect"
 )
 
 // NewTestContext creates a new *TestContext
-// if mockStub and/or couchDBMock are nil, then they are recreated, otherwise existing instance is reused (useful for mocking chaincode update with old data still present)
-func NewTestContext(name string, config engine.Configuration, mockStubIn *MockStub, couchDBMockIn *CouchDBMock) *TestContext {
+// if mockStub and/or CouchDBMock are nil, then they are recreated, otherwise existing instance is reused (useful for mocking chaincode update with old data still present)
+func NewTestContext(name string, config engine.Configuration, mockStubIn *testing.MockStub, couchDBMockIn *testing.CouchDBMock) *TestContext {
 	chaincode, err := engine.NewChaincode(config)
 	if err != nil {
 		panic(err)
 	}
 
-	var mockStub *MockStub
+	var mockStub *testing.MockStub
 	if mockStubIn == nil {
-		mockStub = NewMockStub(name, chaincode) // get new MockStub for testing
+		mockStub = testing.NewMockStub(name, chaincode) // get new MockStub for testing
 	} else {
 		mockStub = mockStubIn   // reuse existing MockStub
-		mockStub.cc = chaincode // when reusing MockStub, always use cc from engine to have latest changes
+		mockStub.Cc = chaincode // when reusing MockStub, always use Cc from engine to have latest changes
 	}
 
-	var couchDBMock *CouchDBMock
+	var couchDBMock *testing.CouchDBMock
 	if couchDBMockIn == nil {
-		couchDBMock = NewCouchDBMock()
+		couchDBMock = testing.NewCouchDBMock()
 	} else {
 		couchDBMock = couchDBMockIn
 	}
 
-	mockStub.couchDBMock = couchDBMock
+	mockStub.CouchDBMock = couchDBMock
 
 	// load actor certificates
-	actors, err := IdentitiesFromFiles(`SOME_MSP`, map[string]string{
+	actors, err := testing.IdentitiesFromFiles(`SOME_MSP`, map[string]string{
 		"superUser":    "s7techlab.pem",
-		"ordinaryUser": "victor-nosov.pem", // TODO remove ;)
+		"ordinaryUser": "victor-nosov.pem",
 		"nobodyUser":   "some-person.pem",
-	}, examplecert.Content)
+	}, examplecert2.Content)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,23 +65,23 @@ func NewTestContext(name string, config engine.Configuration, mockStubIn *MockSt
 }
 
 type TestContext struct {
-	cc                *MockStub
+	cc                *testing.MockStub
 	currentActorName  string
-	actors            Identities
+	actors            testing.Identities
 	AssetsAllowed     map[string]struct{}
 	SingletonsAllowed map[string]struct{}
 	idFunc            engine.IDFunc
 }
 
 func (tctx *TestContext) Wait() {
-	tctx.cc.couchDBMock.Wait()
+	tctx.cc.CouchDBMock.Wait()
 }
 
-func (tctx *TestContext) GetCouchDBMock() *CouchDBMock {
-	return tctx.cc.couchDBMock
+func (tctx *TestContext) GetCouchDBMock() *testing.CouchDBMock {
+	return tctx.cc.CouchDBMock
 }
 
-func (tctx *TestContext) GetMockStub() *MockStub {
+func (tctx *TestContext) GetMockStub() *testing.MockStub {
 	return tctx.cc
 }
 
@@ -110,13 +111,13 @@ func (tctx *TestContext) AllowSingletons(names []string) {
 }
 
 // AddActor adds actorName with identity ref to this TestContext
-func (tctx *TestContext) AddActor(actorName string, identity *Identity) {
+func (tctx *TestContext) AddActor(actorName string, identity *testing.Identity) {
 	tctx.actors[actorName] = identity
 }
 
 // MustAddActorFromPemFile
 func (tctx *TestContext) MustAddActorFromPemFile(actorName, filePath string) {
-	identity, err := IdentityFromFile("SOME_MSP", filePath, content)
+	identity, err := testing.IdentityFromFile("SOME_MSP", filePath, content)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -160,7 +161,7 @@ func (tctx *TestContext) GetLastEventPayload() map[string]interface{} {
 }
 
 // GetCC returns MockStub ref
-func (tctx *TestContext) GetCC() *MockStub {
+func (tctx *TestContext) GetCC() *testing.MockStub {
 	return tctx.cc
 }
 
@@ -170,7 +171,7 @@ func (tctx *TestContext) SetChannelID(id string) {
 }
 
 // GetCurrentActor returns ref to identity for current actor
-func (tctx *TestContext) GetCurrentActor() *Identity {
+func (tctx *TestContext) GetCurrentActor() *testing.Identity {
 	return tctx.actors[tctx.currentActorName]
 }
 
@@ -179,7 +180,7 @@ func (tctx *TestContext) GetCurrentActorName() string {
 	return tctx.currentActorName
 }
 
-func (tctx *TestContext) getActorFingerprint(actor *Identity) string {
+func (tctx *TestContext) getActorFingerprint(actor *testing.Identity) string {
 	fp, err := tctx.idFunc(actor.Certificate)
 	if err != nil {
 		panic(err)
@@ -204,22 +205,22 @@ func (tctx *TestContext) InitOk(iargs ...interface{}) {
 	expectcc.ResponseOk(tctx.cc.From(tctx.GetCurrentActor()).Init(iargs...))
 }
 
-// InitError executes CC init method with args and expects error with errorSubstr to be present
+// InitError executes CC init method with Args and expects error with errorSubstr to be present
 func (tctx *TestContext) InitError(errorSubstr string, iargs ...interface{}) {
 	ResponseErrorSubstr(tctx.cc.From(tctx.GetCurrentActor()).Init(iargs...), errorSubstr)
 }
 
-// Ok invokes mock CC method with args and expects no error. Result is thrown away
+// Ok invokes mock CC method with Args and expects no error. Result is thrown away
 func (tctx *TestContext) Ok(funcName string, iargs ...interface{}) {
 	expectcc.ResponseOk(tctx.cc.From(tctx.GetCurrentActor()).Invoke(funcName, iargs...))
 }
 
-// Errors invokes mock CC method with args and expects error with errorSubstr to be present
+// Errors invokes mock CC method with Args and expects error with errorSubstr to be present
 func (tctx *TestContext) Error(errorSubstr string, funcName string, iargs ...interface{}) {
 	ResponseErrorSubstr(tctx.cc.From(tctx.GetCurrentActor()).Invoke(funcName, iargs...), errorSubstr)
 }
 
-// Rmap invokes mock CC method with args and returns "result" key of response as Rmap
+// Rmap invokes mock CC method with Args and returns "result" key of response as Rmap
 func (tctx *TestContext) Rmap(funcName string, iargs ...interface{}) Rmap {
 	rm := tctx.invoke(funcName, iargs...)
 	output, err := rm.GetRmap("result")
@@ -227,17 +228,17 @@ func (tctx *TestContext) Rmap(funcName string, iargs ...interface{}) Rmap {
 	return output
 }
 
-// RmapNoResult invokes mock CC method with args and returns result as Rmap
+// RmapNoResult invokes mock CC method with Args and returns result as Rmap
 func (tctx *TestContext) RmapNoResult(funcName string, iargs ...interface{}) Rmap {
 	return tctx.invoke(funcName, iargs...)
 }
 
-// JSON invokes mock CC method with args and returns "result" key of response
+// JSON invokes mock CC method with Args and returns "result" key of response
 func (tctx *TestContext) JSON(funcName string, iargs ...interface{}) map[string]interface{} {
 	return tctx.Rmap(funcName, iargs...).Mapa
 }
 
-// JSONNoResult invokes mock CC method with args and returns result directly
+// JSONNoResult invokes mock CC method with Args and returns result directly
 func (tctx *TestContext) JSONNoResult(funcName string, iargs ...interface{}) map[string]interface{} {
 	rm := tctx.invoke(funcName, iargs...)
 	return rm.Mapa
@@ -246,7 +247,7 @@ func (tctx *TestContext) JSONNoResult(funcName string, iargs ...interface{}) map
 // invoke for mock CC method invoking
 func (tctx *TestContext) invoke(funcName string, iargs ...interface{}) Rmap {
 	//var bytes []byte
-	//data := expectcc.PayloadIs(tctx.cc.From(tctx.GetCurrentActor()).Invoke(funcName, iargs...), &bytes).([]byte)
+	//data := expectcc.PayloadIs(tctx.Cc.From(tctx.GetCurrentActor()).Invoke(funcName, iargs...), &bytes).([]byte)
 	response := expectcc.ResponseOk(tctx.cc.From(tctx.GetCurrentActor()).Invoke(funcName, iargs...))
 	rm, err := NewFromBytes(response.Payload)
 	Expect(err).To(BeNil())

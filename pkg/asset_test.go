@@ -17,7 +17,7 @@ var _ = Describe("asset* method family tests", func() {
 
 	BeforeEach(func() {
 		tctx = getDefaultTextContext()
-		tctx.InitOk(tctx.GetInit("testdata/assets", "").Bytes())
+		tctx.InitOk(tctx.GetInit("../internal/testdata/assets", "").Bytes())
 		tctx.RegisterAllActors()
 	})
 
@@ -256,7 +256,7 @@ var _ = Describe("asset* method family tests", func() {
 
 	Describe("Call to CC method assetMigrate", func() {
 		// regItemV1 contains mandatory description field (already initialized in CC)
-		regItemV1 := rmap.MustNewFromYAMLFile("testdata/assets/mockincident.yaml")
+		regItemV1 := rmap.MustNewFromYAMLFile("../internal/testdata/assets/mockincident.yaml")
 
 		// regItemV2 does not contain description field anymore, but it contains mandatory short_description
 		regItemV2 := regItemV1.Copy()

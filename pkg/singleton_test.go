@@ -11,7 +11,7 @@ var _ = Describe("singleton* method family tests", func() {
 	var tctx *TestContext
 
 	singletonName := "mocksingleton"
-	singletonMock := rmap.MustNewFromYAMLFile("testdata/singletons/mocksingleton.yaml")
+	singletonMock := rmap.MustNewFromYAMLFile("../internal/testdata/singletons/mocksingleton.yaml")
 
 	BeforeEach(func() {
 		tctx = getDefaultTextContext()

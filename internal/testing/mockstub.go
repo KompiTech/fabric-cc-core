@@ -11,7 +11,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testing/convert"
+	convert2 "github.com/KompiTech/fabric-cc-core/v2/internal/testing/convert"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -24,8 +24,8 @@ import (
 var (
 	// ErrChaincodeNotExists occurs when attempting to invoke a nonexostent external chaincode
 	ErrChaincodeNotExists = errors.New(`chaincode not exists`)
-	// ErrUnknownFromArgsType  occurs when attempting to set unknown args in From func
-	ErrUnknownFromArgsType = errors.New(`unknown args type to cckit.MockStub.From func`)
+	// ErrUnknownFromArgsType  occurs when attempting to set unknown Args in From func
+	ErrUnknownFromArgsType = errors.New(`unknown Args type to cckit.MockStub.From func`)
 	ErrPaginatedTmpl       = `%s failed: transaction ID: %s: txid [%s]: Transaction has already performed a paginated query. Writes are not allowed`
 )
 
@@ -39,13 +39,13 @@ const (
 // Use this instead of ChaincodeStub in your chaincode's unit test calls to Init or Invoke.
 type MockStub struct {
 	// arguments the stub was called with
-	args [][]byte
+	Args [][]byte
 
 	// transientMap
 	TransientMap map[string][]byte
 	// A pointer back to the chaincode that will invoke this, set by constructor.
 	// If a peer calls this stub, the chaincode will be invoked from here.
-	cc shim.Chaincode
+	Cc shim.Chaincode
 
 	// A nice name that can be used for logging
 	Name string
@@ -94,7 +94,7 @@ type MockStub struct {
 	ignoringEvents              bool                 // if true, then events are not saved in channel and it does not need to be emptied
 	_args                       [][]byte
 	chaincodeEventSubscriptions []chan *peer.ChaincodeEvent // multiple event subscriptions
-	couchDBMock                 *CouchDBMock
+	CouchDBMock                 *CouchDBMock
 	//shimtest.MockStub
 }
 
@@ -102,7 +102,7 @@ type MockStub struct {
 func NewMockStub(name string, cc shim.Chaincode) *MockStub {
 	s := new(MockStub)
 	s.Name = name
-	s.cc = cc
+	s.Cc = cc
 	s.State = make(map[string][]byte)
 	s.PvtState = make(map[string]map[string][]byte)
 	s.EndorsementPolicies = make(map[string]map[string][]byte)
@@ -133,7 +133,7 @@ func (stub *MockStub) GetChannelID() string {
 
 // GetArgs ...
 func (stub *MockStub) GetArgs() [][]byte {
-	return stub.args
+	return stub.Args
 }
 
 // GetStringArgs ...
@@ -193,9 +193,9 @@ func (stub *MockStub) MockPeerChaincode(invokableChaincodeName string, otherStub
 
 // MockInit Initialise this chaincode,  also starts and ends a transaction.
 func (stub *MockStub) MockInit(uuid string, args [][]byte) peer.Response {
-	stub.args = args
+	stub.Args = args
 	stub.MockTransactionStart(uuid)
-	res := stub.cc.Init(stub)
+	res := stub.Cc.Init(stub)
 	stub.MockTransactionEnd(uuid)
 	stub.isRO = false
 	return res
@@ -203,10 +203,10 @@ func (stub *MockStub) MockInit(uuid string, args [][]byte) peer.Response {
 
 // MockInvoke Invoke this chaincode, also starts and ends a transaction.
 func (stub *MockStub) MockInvoke(uuid string, args [][]byte) peer.Response {
-	stub.args = args
+	stub.Args = args
 	stub.ChaincodeEvent = nil
 	stub.MockTransactionStart(uuid)
-	res := stub.cc.Invoke(stub)
+	res := stub.Cc.Invoke(stub)
 	stub.MockTransactionEnd(uuid)
 	stub.isRO = false
 	return res
@@ -219,10 +219,10 @@ func (stub *MockStub) GetDecorations() map[string][]byte {
 
 // MockInvokeWithSignedProposal Invoke this chaincode, also starts and ends a transaction.
 func (stub *MockStub) MockInvokeWithSignedProposal(uuid string, args [][]byte, sp *peer.SignedProposal) peer.Response {
-	stub.args = args
+	stub.Args = args
 	stub.MockTransactionStart(uuid)
 	stub.signedProposal = sp
-	res := stub.cc.Invoke(stub)
+	res := stub.Cc.Invoke(stub)
 	stub.MockTransactionEnd(uuid)
 	stub.isRO = false
 	return res
@@ -262,7 +262,7 @@ func (stub *MockStub) PutPrivateData(collection string, key string, value []byte
 
 	m[key] = value
 
-	stub.couchDBMock.PutPrivateData(collection, key, value)
+	stub.CouchDBMock.PutPrivateData(collection, key, value)
 	return nil
 }
 
@@ -282,7 +282,7 @@ func (stub *MockStub) DelPrivateData(collection string, key string) error {
 	delete(m, key)
 	stub.PvtState[collection] = m
 
-	stub.couchDBMock.DelPrivateData(collection, key)
+	stub.CouchDBMock.DelPrivateData(collection, key)
 	return nil
 }
 
@@ -300,7 +300,7 @@ func (stub *MockStub) GetPrivateDataByPartialCompositeKey(collection, objectType
 func (stub *MockStub) GetPrivateDataQueryResult(collection, query string) (shim.StateQueryIteratorInterface, error) {
 	stub.isRO = true
 	//TODO pageSize and bookmark is not supported by shim API yet
-	iterator, _ := stub.couchDBMock.GetQueryResult(collection, query, 1000, "")
+	iterator, _ := stub.CouchDBMock.GetQueryResult(collection, query, 1000, "")
 	return iterator, nil
 }
 
@@ -352,7 +352,7 @@ func (stub *MockStub) PutState(key string, value []byte) error {
 		stub.Keys.PushFront(key)
 	}
 
-	stub.couchDBMock.PutState(key, value)
+	stub.CouchDBMock.PutState(key, value)
 
 	return nil
 }
@@ -404,7 +404,7 @@ func (stub *MockStub) GetQueryResult(query string) (shim.StateQueryIteratorInter
 	// Not implemented since the mock engine does not have a query engine.
 	// However, a very simple query engine that supports string matching
 	// could be implemented to test that the framework supports queries
-	iterator, _ := stub.couchDBMock.GetQueryResult("", query, 1000, "")
+	iterator, _ := stub.CouchDBMock.GetQueryResult("", query, 1000, "")
 	return iterator, nil
 }
 
@@ -468,7 +468,7 @@ func (stub *MockStub) GetStateByPartialCompositeKeyWithPagination(objectType str
 func (stub *MockStub) GetQueryResultWithPagination(query string, pageSize int32,
 	bookmark string) (shim.StateQueryIteratorInterface, *peer.QueryResponseMetadata, error) {
 	stub.isRO = true
-	iterator, metadata := stub.couchDBMock.GetQueryResult("", query, pageSize, bookmark)
+	iterator, metadata := stub.CouchDBMock.GetQueryResult("", query, pageSize, bookmark)
 	return iterator, metadata, nil
 }
 
@@ -481,9 +481,9 @@ func (stub *MockStub) InvokeChaincode(chaincodeName string, args [][]byte, chann
 	if channel != "" {
 		chaincodeName = chaincodeName + "/" + channel
 	}
-	// TODO "args" here should possibly be a serialized pb.ChaincodeInput
+	// TODO "Args" here should possibly be a serialized pb.ChaincodeInput
 	otherStub := stub.Invokables[chaincodeName]
-	//	function, strings := getFuncArgs(args)
+	//	function, strings := getFuncArgs(Args)
 	res := otherStub.MockInvoke(stub.TxID, args)
 	return res
 }
@@ -749,7 +749,7 @@ func (stub *MockStub) generateTxUID() string {
 func (stub *MockStub) Init(iargs ...interface{}) peer.Response {
 	arg1 := [][]byte{[]byte("Init")}
 
-	args, err := convert.ArgsToBytes(iargs...)
+	args, err := convert2.ArgsToBytes(iargs...)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -761,7 +761,7 @@ func (stub *MockStub) Init(iargs ...interface{}) peer.Response {
 
 // Invoke sugared invoke function with autogenerated tx uuid
 func (stub *MockStub) Invoke(funcName string, iargs ...interface{}) peer.Response {
-	fargs, err := convert.ArgsToBytes(iargs...)
+	fargs, err := convert2.ArgsToBytes(iargs...)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -769,7 +769,7 @@ func (stub *MockStub) Invoke(funcName string, iargs ...interface{}) peer.Respons
 	return stub.MockInvoke(stub.generateTxUID(), args)
 }
 
-// SetArgs set mocked args
+// SetArgs set mocked Args
 func (stub *MockStub) SetArgs(args [][]byte) {
 	stub._args = args
 }

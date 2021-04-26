@@ -5,7 +5,7 @@ import (
 	"encoding/pem"
 	"time"
 
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testing/identity"
+	identity2 "github.com/KompiTech/fabric-cc-core/v2/internal/testing/identity"
 	msppb "github.com/hyperledger/fabric-protos-go/msp"
 
 	"github.com/golang/protobuf/proto"
@@ -32,7 +32,7 @@ func MustIdentityFromPem(mspID string, certPEM []byte) *Identity {
 }
 
 func IdentityFromPem(mspID string, certPEM []byte) (*Identity, error) {
-	certIdentity, err := identity.New(mspID, certPEM)
+	certIdentity, err := identity2.New(mspID, certPEM)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func IdentitiesFromPem(mspID string, certPEMs map[string][]byte) (ids Identities
 }
 
 // IdentitiesFromFiles returns map of CertIdentity, loaded from PEM files
-func IdentitiesFromFiles(mspID string, files map[string]string, getContent identity.GetContent) (Identities, error) {
+func IdentitiesFromFiles(mspID string, files map[string]string, getContent identity2.GetContent) (Identities, error) {
 	contents := make(map[string][]byte)
 	for key, filename := range files {
 		content, err := getContent(filename)
@@ -64,7 +64,7 @@ func IdentitiesFromFiles(mspID string, files map[string]string, getContent ident
 }
 
 // IdentityFromFile returns Identity struct containing mspId and certificate
-func IdentityFromFile(mspID string, file string, getContent identity.GetContent) (*Identity, error) {
+func IdentityFromFile(mspID string, file string, getContent identity2.GetContent) (*Identity, error) {
 	content, err := getContent(file)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func IdentityFromFile(mspID string, file string, getContent identity.GetContent)
 }
 
 //  MustIdentitiesFromFiles
-func MustIdentitiesFromFiles(mspID string, files map[string]string, getContent identity.GetContent) Identities {
+func MustIdentitiesFromFiles(mspID string, files map[string]string, getContent identity2.GetContent) Identities {
 	ids, err := IdentitiesFromFiles(mspID, files, getContent)
 	if err != nil {
 		panic(err)
@@ -148,11 +148,11 @@ func (i *Identity) GetPublicVersion() msp.Identity {
 // ==== additional method ===
 
 func (i *Identity) GetSubject() string {
-	return identity.GetDN(&i.Certificate.Subject)
+	return identity2.GetDN(&i.Certificate.Subject)
 }
 
 func (i *Identity) GetID() string {
-	return identity.IDByCert(i.Certificate)
+	return identity2.IDByCert(i.Certificate)
 }
 
 // GetPEM certificate encoded to PEM

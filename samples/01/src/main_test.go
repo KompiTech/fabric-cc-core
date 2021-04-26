@@ -3,6 +3,7 @@ package main
 import (
 	"testing"
 
+	testing2 "github.com/KompiTech/fabric-cc-core/v2/internal/testing"
 	. "github.com/KompiTech/fabric-cc-core/v2/pkg/testing"
 	"github.com/KompiTech/rmap"
 
@@ -13,7 +14,7 @@ import (
 // this func is entrypoint for Ginkgo tests from standard go testing
 func Test(t *testing.T) {
 	// make sure the Docker container handling CouchDB is ready
-	InitializeCouchDBContainer()
+	testing2.InitializeCouchDBContainer()
 
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "sample 01-library tests")

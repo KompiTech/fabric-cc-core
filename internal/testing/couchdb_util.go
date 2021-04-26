@@ -30,7 +30,7 @@ func run(name string, args ...string) (*exec.Cmd, *bytes.Buffer, *bytes.Buffer) 
 	return cmd, &stdout, &stderr
 }
 
-func runCouch() {
+func RunCouch() {
 	runArgs := []string{"run", "-d", "--rm",
 		"-p", CouchDBExternalPort + ":" + CouchDBInternalPort,
 		"-e", "COUCHDB_USER=" + username, "-e", "COUCHDB_PASSWORD=" + password,
@@ -40,7 +40,7 @@ func runCouch() {
 		CouchDBContainerImage,
 	}
 
-	errMsg := fmt.Sprintf("Unable to build %s image, try building it yourself \ncd `go list -f '{{.Dir}}' github.com/KompiTech/fabric-cc-core/v2/pkg`/testing_docker && docker build . -t couchdb_tmpfs && cd -", CouchDBContainerImage)
+	errMsg := fmt.Sprintf("Unable to build %s image, try building it yourself \ncd `go list -f '{{.Dir}}' github.com/KompiTech/fabric-cc-core/v2/pkg`/testing_docker && docker build . -t %s && cd -", CouchDBContainerImage, CouchDBContainerImage)
 
 	cmd, _, serr := run("docker", runArgs...)
 	if !cmd.ProcessState.Success() {
@@ -87,7 +87,7 @@ func runCouch() {
 	}
 }
 
-func isCouchRunning() bool {
+func IsCouchRunning() bool {
 	cmd, sout, serr := run("docker", "ps", "-q", "--filter", "name="+CouchDBContainerName)
 	if !cmd.ProcessState.Success() {
 		log.Fatalf("docker ps failed, stderr: " + serr.String())
@@ -101,11 +101,11 @@ func isCouchRunning() bool {
 	return false
 }
 
-func removeCouch() {
+func RemoveCouch() {
 	_, _, _ = run("docker", "rm", "-f", CouchDBContainerName)
 }
 
-func waitForCouch() {
+func WaitForCouch() {
 	log.Print("Waiting for CouchDB to become ready...")
 	maxIters := 600 // default 600 * 100ms = 60 seconds
 	iter := 0
@@ -138,8 +138,8 @@ func waitForCouch() {
 	log.Printf("CouchDB became ready in %d ms", int64(iter)*int64(stepMs))
 }
 
-// initSysDBs initializes system DBs, so couch wont spam log file
-func initSysDBs() {
+// InitSysDBs initializes system DBs, so couch wont spam log file
+func InitSysDBs() {
 	client := http.Client{}
 
 	req, err := http.NewRequest("PUT", CouchDBAddress+"/_users", nil)
@@ -164,14 +164,3 @@ func initSysDBs() {
 	_, _ = client.Do(req)
 }
 
-// InitializeCouchDBContainer prepares CouchDB running in docker for use by this mock. It should be called only once before test suite, because it is quite time intensive
-func InitializeCouchDBContainer() {
-	if !isCouchRunning() {
-		log.Print("CouchDB container is not running, removing it...")
-		removeCouch()
-		log.Print("Creating new CouchDB container")
-		runCouch()
-	}
-	waitForCouch()
-	initSysDBs()
-}
