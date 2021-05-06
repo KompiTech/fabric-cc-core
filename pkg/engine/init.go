@@ -26,7 +26,7 @@ func getSUQuery() map[string]interface{} {
 // initChaincode is the standard initialization method for chaincode
 // it handles:
 // setting of initManager variable if no initManagers are present
-// upserting of assets and singletons (new version is created only if it differs from latest by hash)
+// upsert of assets and singletons (new version is created only if it differs from latest by hash)
 func initChaincode(ctx ContextInterface) error {
 	// check for old LVM key, refuse to init in this case
 	lvmBytes, err := ctx.Stub().GetState(LatestVersionMapKey)
@@ -116,7 +116,7 @@ func bootstrapSuperUser(ctx ContextInterface, input rmap.Rmap) error {
 	return nil
 }
 
-// upsertRegistries upserts everything from registries key when initing CC
+// upsertRegistries upsert everything from registries key when initializing CC
 func upsertRegistries(ctx ContextInterface, input rmap.Rmap) error {
 	reg := ctx.GetRegistry()
 
@@ -131,7 +131,7 @@ func upsertRegistries(ctx ContextInterface, input rmap.Rmap) error {
 
 		// iteration through keys must be deterministic on all peers -> sort keys before iterating
 		keys := make([]string, 0, len(registries.Mapa))
-		for k, _ := range registries.Mapa {
+		for k := range registries.Mapa {
 			keys = append(keys, k)
 		}
 
@@ -158,7 +158,7 @@ func upsertRegistries(ctx ContextInterface, input rmap.Rmap) error {
 	return nil
 }
 
-// upsertSingletons upserts everything from singletons key when initing CC
+// upsertSingletons upsert everything from singletons key when initializing CC
 func upsertSingletons(ctx ContextInterface, input rmap.Rmap) error {
 	reg := ctx.Get(RegistryKey).(*Registry)
 
@@ -172,7 +172,7 @@ func upsertSingletons(ctx ContextInterface, input rmap.Rmap) error {
 
 		// iteration through keys must be deterministic on all peers -> sort keys before iterating
 		keys := make([]string, 0, len(singletons.Mapa))
-		for k, _ := range singletons.Mapa {
+		for k := range singletons.Mapa {
 			keys = append(keys, k)
 		}
 

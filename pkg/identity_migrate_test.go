@@ -1,8 +1,8 @@
 package cc_core
 
 import (
+	testdata2 "github.com/KompiTech/fabric-cc-core/v2/internal/testdata"
 	"github.com/KompiTech/fabric-cc-core/v2/pkg/engine"
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testdata"
 	. "github.com/KompiTech/fabric-cc-core/v2/pkg/testing"
 	"github.com/KompiTech/rmap"
 	. "github.com/onsi/ginkgo"
@@ -12,7 +12,7 @@ import (
 var _ = Describe("identity IDFunc migration", func() {
 	It("Should be able to migrate identity assets with old fingerprint", func() {
 		// this tests needs to reuse existing data between invocations, so custom tctx handling must be done
-		eng := testdata.GetConfiguration()
+		eng := testdata2.GetConfiguration()
 		eng.CurrentIDFunc = engine.CertSHA512IDFunc
 
 		tctx := NewTestContext("mock", eng, nil, nil)

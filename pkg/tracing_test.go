@@ -16,7 +16,7 @@ var _ = Describe("tracing tests", func() { // TODO on Fabric 2.4.3
 
 	BeforeEach(func() {
 		tctx = getDefaultTextContext()
-		tctx.InitOk(tctx.GetInit("testdata/assets", "").Bytes())
+		tctx.InitOk(tctx.GetInit("../internal/testdata/assets", "").Bytes())
 		tctx.RegisterAllActors()
 	})
 

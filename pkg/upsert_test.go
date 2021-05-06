@@ -30,7 +30,7 @@ var _ = Describe("upsert* function tests", func() {
 			})
 
 			for _, name = range names {
-				data.SetJPtr("/registries/"+name, rmap.MustNewFromYAMLFile("testdata/assets/"+name+".yaml"))
+				data.SetJPtr("/registries/"+name, rmap.MustNewFromYAMLFile("../internal/testdata/assets/"+name+".yaml"))
 			}
 
 			tctx.Ok("functionInvoke", "upsertRegistries", data.Bytes())
@@ -39,7 +39,7 @@ var _ = Describe("upsert* function tests", func() {
 				reg := tctx.Rmap("registryGet", name, -1)
 
 				delete(reg.Mapa, "version") // version key is dependent on runtime, so it is not contained in yaml
-				yamlData := rmap.MustNewFromYAMLFile("testdata/assets/" + name + ".yaml")
+				yamlData := rmap.MustNewFromYAMLFile("../internal/testdata/assets/" + name + ".yaml")
 				yamlData.Mapa["name"] = name // name is omitted from yaml because it is already contained in filename
 
 				Expect(reg.Mapa).To(Equal(yamlData.Mapa))
@@ -61,7 +61,7 @@ var _ = Describe("upsert* function tests", func() {
 			})
 
 			for _, name = range names {
-				data.SetJPtr("/singletons/"+name, rmap.MustNewFromYAMLFile("testdata/singletons/"+name+".yaml"))
+				data.SetJPtr("/singletons/"+name, rmap.MustNewFromYAMLFile("../internal/testdata/singletons/"+name+".yaml"))
 			}
 
 			tctx.Ok("functionInvoke", "upsertSingletons", data.Bytes())
@@ -70,7 +70,7 @@ var _ = Describe("upsert* function tests", func() {
 				reg := tctx.Rmap("singletonGet", name, -1)
 
 				delete(reg.Mapa, "version") // version key is dependent on runtime, so it is not contained in yaml
-				yamlData := rmap.MustNewFromYAMLFile("testdata/singletons/" + name + ".yaml")
+				yamlData := rmap.MustNewFromYAMLFile("../internal/testdata/singletons/" + name + ".yaml")
 				yamlData.Mapa["name"] = name // name is omitted from yaml because it is already contained in filename
 
 				Expect(reg.Mapa).To(Equal(yamlData.Mapa))

@@ -1,0 +1,21 @@
+destination: state
+schema:
+  title: MockIncident
+  description: An Incident is ITSM managed item
+  type: object
+  properties:
+    description:
+      description: Description of stuff
+      type: string
+    assigned_to:
+      description: _INDEX_
+      type: string
+    additional_assignees:
+      description: aaaaaa_INDEX_
+      type: string
+    timelogs:
+      description: aaaaaa_INDEX_bbbbbbbbb
+      type: string
+  required:
+    - description
+  additionalProperties: false

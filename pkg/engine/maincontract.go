@@ -9,9 +9,9 @@ type mainContract struct {
 	contractapi.Contract
 }
 
+// KompiTech is func is just to make Fabric happy, otherwise the contract will not work
 // routing is done in route() method which is called by unknownTransactionHandler
 // standard fabric public functions are not used because of more flexibility of handling errors and tracing provided
-// this func is just to make Fabric happy, otherwise the contract will not work
 func (mc *mainContract) KompiTech(ctx ContextInterface) (string, error) {
 	return rmap.NewFromMap(map[string]interface{}{"Powered by": "KompiTech"}).String(), nil
 }

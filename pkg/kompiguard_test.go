@@ -11,7 +11,7 @@ var _ = Describe("kompiguard", func() {
 
 	BeforeEach(func() {
 		tctx = getDefaultTextContext()
-		tctx.InitOk(tctx.GetInit("testdata/assets", "").Bytes())
+		tctx.InitOk(tctx.GetInit("../internal/testdata/assets", "").Bytes())
 		tctx.RegisterAllActors()
 	})
 

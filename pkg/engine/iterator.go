@@ -21,7 +21,7 @@ func (i Iterator) Close() error {
 	return i.iterator.Close()
 }
 
-// returns next asset, optionally resolves it
+// Next returns next asset, optionally resolves it
 // if it returns (nil, nil), then the iterator is exhausted
 func (i Iterator) Next(resolve bool) (*rmap.Rmap, error) {
 	// end of iterator

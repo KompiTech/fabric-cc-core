@@ -7,7 +7,7 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
-// extension of contractapi.TransactionContextInterface, mimics old Context
+// ContextInterface is extension of contractapi.TransactionContextInterface
 type ContextInterface interface {
 	contractapi.TransactionContextInterface
 	contractapi.SettableTransactionContextInterface

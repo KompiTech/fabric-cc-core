@@ -19,7 +19,7 @@ var _ = Describe("registry* method family tests", func() {
 	Describe("Call to CC method Init()", func() {
 		It("Should upsert any registries and create changelog items", func() {
 			assetName = "mockincident"
-			regItemFile := rmap.MustNewFromYAMLFile("testdata/assets/mockincident.yaml")
+			regItemFile := rmap.MustNewFromYAMLFile("../internal/testdata/assets/mockincident.yaml")
 
 			init := tctx.GetInit("", "")
 			registries := map[string]interface{}{
@@ -62,7 +62,7 @@ var _ = Describe("registry* method family tests", func() {
 		})
 
 		It("Should return error if some schema root type is not object", func() {
-			regItemFile := rmap.MustNewFromYAMLFile("testdata/assets/mockincident.yaml")
+			regItemFile := rmap.MustNewFromYAMLFile("../internal/testdata/assets/mockincident.yaml")
 			regItemFile.MustSetJPtr("/schema/type", "array")
 
 			init := tctx.GetInit("", "")
@@ -79,7 +79,7 @@ var _ = Describe("registry* method family tests", func() {
 				initData := tctx.GetInit("", "")
 				initData.Mapa["registries"] = map[string]interface{}{}
 
-				initData.SetJPtr("/registries/mockcommentinvalidschema", rmap.MustNewFromYAMLFile("testdata/mockcommentinvalidschema.yaml"))
+				initData.SetJPtr("/registries/mockcommentinvalidschema", rmap.MustNewFromYAMLFile("../internal/testdata/mockcommentinvalidschema.yaml"))
 				tctx.InitError("schema for: mockcommentinvalidschema is not a valid JSON schema", initData.Bytes())
 			})
 		})
@@ -89,7 +89,7 @@ var _ = Describe("registry* method family tests", func() {
 
 			BeforeEach(func() {
 				assetName = "mockincident"
-				regItemFile = rmap.MustNewFromYAMLFile("testdata/assets/mockincident.yaml")
+				regItemFile = rmap.MustNewFromYAMLFile("../internal/testdata/assets/mockincident.yaml")
 
 				init := tctx.GetInit("", "")
 				registries := map[string]interface{}{
@@ -205,7 +205,7 @@ var _ = Describe("registry* method family tests", func() {
 
 			It("Should create registryItem with version 1 and produce changelog item", func() {
 				assetName = "mockincident"
-				regItemFile := rmap.MustNewFromYAMLFile("testdata/assets/mockincident.yaml")
+				regItemFile := rmap.MustNewFromYAMLFile("../internal/testdata/assets/mockincident.yaml")
 				result := tctx.Rmap("registryUpsert", assetName, regItemFile.Bytes()).Mapa
 				Expect(result).To(HaveKeyWithValue("version", float64(1)))
 				Expect(result).To(HaveKeyWithValue("destination", regItemFile.MustGetJPtrString("/destination")))
@@ -223,7 +223,7 @@ var _ = Describe("registry* method family tests", func() {
 
 			Context("When schema contains error", func() {
 				It("Should return error", func() {
-					tctx.Error("schema for: mockcommentinvalidschema is not a valid JSON schema", "registryUpsert", "mockcommentinvalidschema", rmap.MustNewFromYAMLFile("testdata/mockcommentinvalidschema.yaml").Bytes())
+					tctx.Error("schema for: mockcommentinvalidschema is not a valid JSON schema", "registryUpsert", "mockcommentinvalidschema", rmap.MustNewFromYAMLFile("../internal/testdata/mockcommentinvalidschema.yaml").Bytes())
 				})
 			})
 		})
@@ -236,7 +236,7 @@ var _ = Describe("registry* method family tests", func() {
 				tctx.InitOk(tctx.GetInit("", "").Bytes())
 				tctx.RegisterAllActors()
 
-				v1 = rmap.MustNewFromYAMLFile("testdata/assets/mockincident.yaml")
+				v1 = rmap.MustNewFromYAMLFile("../internal/testdata/assets/mockincident.yaml")
 
 				tctx.Ok("registryUpsert", assetName, v1.Bytes()) // version 1
 
@@ -248,7 +248,7 @@ var _ = Describe("registry* method family tests", func() {
 
 			Context("When schema contains error", func() {
 				It("Should return error", func() {
-					tctx.Error("schema for: mockincident is not a valid JSON schema", "registryUpsert", assetName, rmap.MustNewFromYAMLFile("testdata/mockcommentinvalidschema.yaml").Bytes())
+					tctx.Error("schema for: mockincident is not a valid JSON schema", "registryUpsert", assetName, rmap.MustNewFromYAMLFile("../internal/testdata/mockcommentinvalidschema.yaml").Bytes())
 				})
 			})
 
@@ -307,7 +307,7 @@ var _ = Describe("registry* method family tests", func() {
 	Describe("Call to CC method registryGet", func() {
 		BeforeEach(func() {
 			init := tctx.GetInit("", "")
-			regs := ScanSomething("testdata/assets")
+			regs := ScanSomething("../internal/testdata/assets")
 			init.MustSetJPtr("/registries", regs.Mapa)
 			tctx.InitOk(init.Bytes())
 			tctx.RegisterAllActors()
@@ -319,7 +319,7 @@ var _ = Describe("registry* method family tests", func() {
 			delete(mockincidentRI.Mapa, "name")
 			delete(mockincidentRI.Mapa, "version")
 
-			refRI := rmap.MustNewFromYAMLFile("testdata/assets/mockincident.yaml")
+			refRI := rmap.MustNewFromYAMLFile("../internal/testdata/assets/mockincident.yaml")
 			Expect(mockincidentRI.Mapa).To(Equal(refRI.Mapa))
 		})
 
@@ -332,7 +332,7 @@ var _ = Describe("registry* method family tests", func() {
 	Describe("Call to CC method registryList", func() {
 		BeforeEach(func() {
 			init := tctx.GetInit("", "")
-			regs := ScanSomething("testdata/assets")
+			regs := ScanSomething("../internal/testdata/assets")
 			init.MustSetJPtr("/registries", regs.Mapa)
 			tctx.InitOk(init.Bytes())
 			tctx.RegisterAllActors()

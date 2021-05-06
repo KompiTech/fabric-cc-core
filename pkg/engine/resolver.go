@@ -53,7 +53,7 @@ func (r resolver) WalkReferences(ctx ContextInterface, asset Rmap, resolve bool)
 // walkReferences recursively visits all attributes on asset. For each, decide if it is a reference by looking into related schema for reference magic string in description.
 // Params:
 // ctx - Context
-// thisSssetName - name of currently walked asset instance
+// thisAssetName - name of currently walked asset instance
 // pathJPtrSlice - current search path JSONPointer, relative to root, as slice with all elements (no separators)
 // root - root of asset structure, this doesn't change between invocations
 // dataPtr - currently analyzed value, in first call the value must be same as root
@@ -105,29 +105,29 @@ func (r resolver) walkReferences(ctx ContextInterface, thisAssetName string, pat
 		// search schema and find if this pathJPtrSlice is reference in this schema
 		pathJPtr := konst.JPtrSeparator + strings.Join(pathJPtrSlice, konst.JPtrSeparator)
 
-		descrJPtr, err := r.getDescriptionJPtr(pathJPtr)
+		descJPtr, err := r.getDescriptionJPtr(pathJPtr)
 		if err != nil {
 			return err
 		}
 
-		descrExists, err := schema.ExistsJPtr(descrJPtr)
+		descExists, err := schema.ExistsJPtr(descJPtr)
 		if err != nil {
 			return err
 		}
 
 		// description in schema does not exist, cannot be a ref
-		if !descrExists {
+		if !descExists {
 			return nil
 		}
 
-		descr, err := schema.GetJPtrString(descrJPtr)
+		desc, err := schema.GetJPtrString(descJPtr)
 		if err != nil {
 			return errors.Wrap(err, "sch.GetDescription() failed")
 		}
 
 		// analyze schema description and element value
 		// decide, if this is ref at all, or entityref
-		isRef, targetName, targetUUID, err := r.analyzeRef(descr, el)
+		isRef, targetName, targetUUID, err := r.analyzeRef(desc, el)
 		if err != nil {
 			return errors.Wrap(err, "r.analyzeRef() failed")
 		}
@@ -178,7 +178,7 @@ func (r resolver) walkReferences(ctx ContextInterface, thisAssetName string, pat
 			if !condition {
 				// allow transitive recursive resolve - if target points to something defined in whitelist, recurse
 				key := targetName + "."
-				for k, _ := range eng.RecursiveResolveWhitelist.Mapa {
+				for k := range eng.RecursiveResolveWhitelist.Mapa {
 					if strings.HasPrefix(k, key) {
 						condition = true
 						break
@@ -268,7 +268,6 @@ func (r resolver) analyzeRef(description, element string) (isRef bool, assetName
 	}
 
 	// description value prefix is ref
-	// TODO regexpify
 	// find first space after REF->{SOMETHING}
 	assetNameEnd := strings.Index(description, " ")
 	if assetNameEnd == -1 {

@@ -48,7 +48,7 @@ func ensureSuperUserGrant(existingIdentity rmap.Rmap) (bool, error) {
 
 		grantNeeded := true
 
-		for index, _ := range rolesIter {
+		for index := range rolesIter {
 			// check if SU role is already granted
 			jptr := "/" + RolesKey + "/" + strconv.Itoa(index)
 
@@ -190,7 +190,7 @@ func identityAddMeFrontend(ctx ContextInterface) (string, error) {
 				"result":   newIdentity.Mapa,
 			})
 
-			// return newIdentity with info about migration occuring
+			// return newIdentity with info about migration occurring
 			return response.String(), nil
 		}
 	}

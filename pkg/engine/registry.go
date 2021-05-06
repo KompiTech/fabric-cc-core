@@ -120,7 +120,7 @@ func (r *Registry) writeChangelog(ci ChangelogItem) error {
 	return nil
 }
 
-// BulkUpsertItems upserts multiple items, updates lvm and changelog
+// BulkUpsertItems upsert multiple items, updates lvm and changelog
 func (r *Registry) BulkUpsertItems(items []bulkItem) error {
 	now, err := r.ctx.Time()
 	if err != nil {
@@ -155,7 +155,7 @@ func (r *Registry) BulkUpsertItems(items []bulkItem) error {
 	return nil
 }
 
-// UpsertItem upserts single item, updates lvm and changelog
+// UpsertItem upsert single item, updates lvm and changelog
 func (r *Registry) UpsertItem(registryItemToUpsert Rmap, assetName string) (Rmap, int, error) {
 	regItem, change, version, err := r.upsertItem(registryItemToUpsert, assetName)
 	if err != nil {
@@ -688,11 +688,11 @@ func (r *Registry) putAsset(asset Rmap, isCreate bool, skipWalkReferences bool) 
 		// first step - replace legacy definitions target to proper $defs form
 		template := "#/%s/"
 
-		old := []byte(fmt.Sprintf(template, oldDefsKey))
-		new := []byte(fmt.Sprintf(template, SchemaDefinitionsKey))
+		oldD := []byte(fmt.Sprintf(template, oldDefsKey))
+		newD := []byte(fmt.Sprintf(template, SchemaDefinitionsKey))
 
 		// replacement is done on bytes form
-		schemaBytes := bytes.Replace(schema.Bytes(), old, new, -1)
+		schemaBytes := bytes.Replace(schema.Bytes(), oldD, newD, -1)
 
 		schema, err = NewFromBytes(schemaBytes)
 		if err != nil {
@@ -776,10 +776,10 @@ func (r *Registry) GetQueryIterator(name string, query Rmap, bookmark string, pa
 	null := Iterator{}
 
 	// check query for not unexpected keys, these will make chaincode panic if sent to CouchDB, which we do not want
-	invalidKeys := []string{}
+	var invalidKeys []string
 	allowedKeys, _ := NewFromSlice([]interface{}{QuerySelectorKey, QueryFieldsKey, QueryBookmarkKey, QueryLimitKey, QuerySortKey})
 
-	for k, _ := range query.Mapa {
+	for k := range query.Mapa {
 		if !allowedKeys.Exists(k) {
 			invalidKeys = append(invalidKeys, k)
 		}

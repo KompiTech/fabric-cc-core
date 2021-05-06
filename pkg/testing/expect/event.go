@@ -1,7 +1,7 @@
 package expect
 
 import (
-	"github.com/KompiTech/fabric-cc-core/v2/pkg/testing/convert"
+	convert2 "github.com/KompiTech/fabric-cc-core/v2/internal/testing/convert"
 	"github.com/hyperledger/fabric-protos-go/peer"
 	g "github.com/onsi/gomega"
 )
@@ -16,7 +16,7 @@ func EventIs(event *peer.ChaincodeEvent, expectName string, expectPayload interf
 // target interface{} and returns converted value
 func EventPayloadIs(event *peer.ChaincodeEvent, target interface{}) interface{} {
 	g.Expect(event).NotTo(g.BeNil())
-	data, err := convert.FromBytes(event.Payload, target)
+	data, err := convert2.FromBytes(event.Payload, target)
 	description := ``
 	if err != nil {
 		description = err.Error()
