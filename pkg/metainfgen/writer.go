@@ -101,12 +101,14 @@ func (w *Writer) WriteIndexFiles(schemas []Schema) error {
 			if _, err := os.Stat(writePath); !os.IsNotExist(err) {
 				// if index file already exists, skip
 				log.Printf("index %s already exists, skipped", writePath)
-				return nil
+				continue
 			}
 
 			if err := ioutil.WriteFile(writePath, idx.Bytes(), 0644); err != nil {
 				return err
 			}
+
+			log.Printf("Wrote index file: %s", writePath)
 		}
 	}
 

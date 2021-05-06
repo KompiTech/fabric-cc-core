@@ -70,13 +70,6 @@ func TestWriter(t *testing.T) {
 	assert.Equal(t, "json", dt.MustGetString("type"))
 	assert.Equal(t, []interface{}{"docType"}, dt.MustGetJPtr("/index/fields"))
 
-	et, err := rmap.NewFromYAMLFile(filepath.Join(statePath, "entity.json"))
-	assert.Nil(t, err)
-	assert.Equal(t, "entity", et.MustGetString("ddoc"))
-	assert.Equal(t, "entity", et.MustGetString("name"))
-	assert.Equal(t, "json", et.MustGetString("type"))
-	assert.Equal(t, []interface{}{"docType", "entity"}, et.MustGetJPtr("/index/fields"))
-
 	tl, err := rmap.NewFromYAMLFile(filepath.Join(statePath, "timelogs.json"))
 	assert.Nil(t, err)
 	assert.Equal(t, "timelogs", tl.MustGetString("ddoc"))

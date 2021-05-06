@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 
-	metainfgen2 "github.com/KompiTech/fabric-cc-core/v2/pkg/metainfgen"
+	. "github.com/KompiTech/fabric-cc-core/v2/pkg/metainfgen"
 )
 
 func main() {
@@ -21,8 +21,19 @@ func main() {
 		log.Fatal("outputDir is mandatory argument")
 	}
 
-	metaInfGen := metainfgen2.New(*registryDir, *outputDir)
-	if err := metaInfGen.Generate(); err != nil {
-		log.Fatal(err)
+	schemas, err := NewScanner(*registryDir)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+
+	wr, err := NewWriter(*outputDir)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+
+
+	err = wr.WriteIndexFiles(schemas)
+	if err != nil {
+		log.Panic(err.Error())
 	}
 }

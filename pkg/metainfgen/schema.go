@@ -113,7 +113,9 @@ func (s *Schema) handleProperty(propName string, property rmap.Rmap) error {
 
 	if strings.Contains(descr, indexMagic) {
 		// found single index
-		s.Indexes = append(s.Indexes, getIndexMap([]string{docType, propName}, propName))
+		idx := []string{docType, propName}
+		s.Indexes = append(s.Indexes, getIndexMap(idx, propName))
+		log.Printf("Found index: %v, on property: %s, on schema: %s", idx, propName, s.Name)
 	} else if multiStart := strings.LastIndex(descr, multiIndexMagicStart); multiStart != -1 {
 		// found multi index
 		s.handleMultiIndex(descr, propName)
@@ -194,7 +196,9 @@ func (s *Schema) generateMultiIndexes() error {
 
 		indexName := "multi." + strings.Join(fieldNames, ".")
 
-		s.Indexes = append(s.Indexes, getIndexMap(append([]string{docType}, fieldNames...), indexName))
+		idx := append([]string{docType}, fieldNames...)
+		s.Indexes = append(s.Indexes, getIndexMap(idx, indexName))
+		log.Printf("Found multi index: %v, name: %s on schema: %s", idx, indexName, s.Name)
 	}
 
 	return nil
