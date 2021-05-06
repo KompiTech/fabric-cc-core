@@ -1,7 +1,6 @@
 package metainfgen
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"sort"
@@ -13,69 +12,70 @@ import (
 const (
 	docType              = "docType"
 	indexMagic           = "_INDEX_"
-	multiIndexMagicStart = "_MULTI:" // multiindexes must follow format _MULTI:<order>:<index_name>_. order controls only sorting of fields in multiindex and cannot be repeated
+	multiIndexMagicStart = "_MULTI:" // multi indexes must follow format _MULTI:<order>:<index_name>_. order controls only sorting of fields in multiindex and cannot be repeated
 	multiIndexMagicEnd   = "_"
-	state                = "state"
 	description          = "description"
 	typ                  = "type"
 	schemaRoot           = "/schema/properties"
 	properties           = "properties"
+	stateDestination     = "state"
 )
 
-// scans single schema and produces IndexFiles to be written by MetaInfGen
-type SchemaScan struct {
-	indexFiles     []IndexFile
-	multiIndexes   map[string]map[string]string // name -> order -> field name
-	collectionName string
+// Schema is parsed YAML schema containing all indexes discovered
+type Schema struct {
+	Name        string
+	Destination string
+	Indexes []rmap.Rmap
+	multiIndexes map[string]map[string]string // name -> order -> field name
 }
 
-func NewSchemaScan() *SchemaScan {
-	return &SchemaScan{
-		indexFiles:   make([]IndexFile, 0),
+// NewSchema parses YAML data from argument and returns Schema obj
+func NewSchema(name string, schema rmap.Rmap) (Schema, error) {
+	sch := &Schema{
+		Name: name,
+		Indexes: []rmap.Rmap{},
 		multiIndexes: map[string]map[string]string{},
 	}
+
+	// scan schema for all indexes and create single indexes
+	if err := sch.scan(schema); err != nil {
+		return *sch, err
+	}
+
+	// create multi indexes for data prepared by scan()
+	if err := sch.generateMultiIndexes(); err != nil {
+		return *sch, err
+	}
+
+	return *sch, nil
 }
 
-func (s *SchemaScan) GetIndexesFromSchema(registryMap rmap.Rmap, name string) ([]IndexFile, error) {
-	if len(s.indexFiles) != 0 || len(s.multiIndexes) != 0 {
-		return nil, errors.New("do not reuse this object")
-	}
-
-	destination, err := registryMap.GetString("destination")
+func (s *Schema) scan(schema rmap.Rmap) error {
+	destination, err := schema.GetString("destination")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if destination == state {
-		s.collectionName = ""
-	} else {
-		s.collectionName = name
-	}
+	s.Destination = destination
 
 	// get schema root and scan for indexes
-	properties, err := registryMap.GetJPtrRmap(schemaRoot)
+	props, err := schema.GetJPtrRmap(schemaRoot)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	// iterate in sorted order, so it is deterministic (tests)
-	for _, k := range sortedKeys(properties) {
-		v := rmap.MustNewFromInterface(properties.Mapa[k])
+	// scan all schema attributes, iterate in sorted order, so it is deterministic (tests)
+	for _, k := range sortedKeys(props) {
+		v := rmap.MustNewFromInterface(props.Mapa[k])
 		if err := s.handleProperty(k, v); err != nil {
-			return nil, err
+			return err
 		}
 	}
 
-	// single field indexes are already produced to indexFiles
-	// create multi indexes
-	if err := s.collectMultiIndexes(); err != nil {
-		return nil, err
-	}
-
-	return s.indexFiles, nil
+	return nil
 }
 
-func (s *SchemaScan) handleProperty(propName string, property rmap.Rmap) error {
+func (s *Schema) handleProperty(propName string, property rmap.Rmap) error {
 	// handle recursion first: if type is object, start recursion for all of its properties
 	if property.Exists(typ) {
 		typ, err := property.GetString(typ)
@@ -101,7 +101,7 @@ func (s *SchemaScan) handleProperty(propName string, property rmap.Rmap) error {
 		}
 	}
 
-	// current obj must contain descr, if it is to define any index
+	// current obj must contain description, if it is to define any index
 	if !property.Exists(description) {
 		return nil
 	}
@@ -111,25 +111,19 @@ func (s *SchemaScan) handleProperty(propName string, property rmap.Rmap) error {
 		return nil
 	}
 
-	s.checkForSingleIndex(descr, propName)
-
-	s.checkForMultiIndex(descr, propName)
+	if strings.Contains(descr, indexMagic) {
+		// found single index
+		s.Indexes = append(s.Indexes, getIndexMap([]string{docType, propName}, propName))
+	} else if multiStart := strings.LastIndex(descr, multiIndexMagicStart); multiStart != -1 {
+		// found multi index
+		s.handleMultiIndex(descr, propName)
+	}
 
 	return nil
 }
 
-func (s *SchemaScan) checkForSingleIndex(descr, propName string) {
-	if !strings.Contains(descr, indexMagic) {
-		return
-	}
 
-	s.indexFiles = append(s.indexFiles, IndexFile{
-		data:     getIndexMap([]string{docType, propName}, propName), // get couchDB formatted json with indexed field (docType is always first), call the index after the field
-		fileName: propName + ".json",
-	})
-}
-
-func (s *SchemaScan) checkForMultiIndex(descr, propName string) {
+func (s *Schema) handleMultiIndex(descr, propName string) {
 	start := strings.LastIndex(descr, multiIndexMagicStart)
 	if start == -1 {
 		return // not found magic
@@ -171,7 +165,7 @@ func (s *SchemaScan) checkForMultiIndex(descr, propName string) {
 	indexNameSection[order] = fieldName
 }
 
-func (s *SchemaScan) collectMultiIndexes() error {
+func (s *Schema) generateMultiIndexes() error {
 	// collect everything prepared in s.multiIndexes to form of s.indexFiles
 
 	keys := make([]string, 0, len(s.multiIndexes))
@@ -200,10 +194,7 @@ func (s *SchemaScan) collectMultiIndexes() error {
 
 		indexName := "multi." + strings.Join(fieldNames, ".")
 
-		s.indexFiles = append(s.indexFiles, IndexFile{
-			data:     getIndexMap(append([]string{docType}, fieldNames...), indexName),
-			fileName: indexName + ".json",
-		})
+		s.Indexes = append(s.Indexes, getIndexMap(append([]string{docType}, fieldNames...), indexName))
 	}
 
 	return nil
@@ -216,4 +207,16 @@ func sortedKeys(m rmap.Rmap) []string {
 	}
 	sort.Strings(keys)
 	return keys
+}
+
+// get map in couchdb format for some fields to index
+func getIndexMap(fields []string, name string) rmap.Rmap {
+	return rmap.NewFromMap(map[string]interface{}{
+		"index": map[string]interface{}{
+			"fields": fields,
+		},
+		"ddoc": name,
+		"name": name,
+		"type": "json",
+	})
 }

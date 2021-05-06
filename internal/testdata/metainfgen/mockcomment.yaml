@@ -1,0 +1,15 @@
+destination: private_data
+schema:
+  title: MockComment
+  type: object
+  description: mockcomment is stored in private data
+  properties:
+    text:
+      type: string
+      description: aaaaaa_INDEX_bbbbbbbbb
+    entity:
+      type: string
+      description: _INDEX_bbbbbbbbb
+  required:
+    - text
+  additionalProperties: false

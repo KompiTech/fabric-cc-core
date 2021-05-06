@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/KompiTech/fabric-cc-core/v2/internal/collgen"
+	collgen2 "github.com/KompiTech/fabric-cc-core/v2/pkg/collgen"
 	"github.com/KompiTech/rmap"
 )
 
@@ -26,6 +26,6 @@ func main() {
 		template = rmap.MustNewFromYAMLFile(*templateFile)
 	}
 
-	collGen := collgen.New(*registryDir, template, os.Stdout)
+	collGen := collgen2.New(*registryDir, template, os.Stdout)
 	collGen.Visit()
 }
