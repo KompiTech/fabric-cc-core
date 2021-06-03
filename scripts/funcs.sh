@@ -73,5 +73,5 @@ function stop_local {
 
 function start_rest {
   init_fabric_repo
-  go run ${PWD}/../../cmd/micro-rest/*.go 10000
+  go run ${PWD}/../../cmd/micro-rest/*.go 10000 &
 }
