@@ -6,7 +6,7 @@ Framework for simplifying chaincode development (Hyperledger Fabric 2.x compatib
 
 Read **samples/README.md** and then try some example(s).
 
-Check the source tests in **src/**
+Check the source tests (```*_test.go```) in **pkg/**
 
 See available methods in METHODS.md
 

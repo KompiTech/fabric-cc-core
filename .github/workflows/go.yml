@@ -5,29 +5,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      GOPRIVATE: github.com/KompiTech/*
-      GITHUB_PRIVATE_KEY: ${{ secrets.DO_GITHUB_PRIVATE_KEY }}
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-      SSH_AUTH_SOCK: /tmp/ssh_agent.sock
     steps:
     - uses: actions/checkout@v2
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
         go-version: 1.14
-    - name: Set Up for tests
-      run: |
-        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-        ssh-add - <<< "${{ secrets.DO_GITHUB_PRIVATE_KEY }}"
-        git config --global url."git@github.com:KompiTech/".insteadOf "https://github.com/KompiTech/"
-        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
     - name: Test
       run: make test
-    - name: Slack Notification
-      uses: act10ns/slack@v1
-      with:
-        status: ${{ job.status }}
-      if: always()

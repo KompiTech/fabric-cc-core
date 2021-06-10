@@ -1,5 +1,4 @@
-export GONOSUMDB = "github.com/KompiTech/*,github.com/cucumber/godog"
-export GOPRIVATE = "github.com/KompiTech/*"
+export GONOSUMDB = "github.com/cucumber/godog"
 
 test ::
 	go test -v ./pkg/...
