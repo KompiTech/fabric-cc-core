@@ -38,7 +38,7 @@ type RegistryInterface interface {
 	GetThisIdentityResolved() (Rmap, error)
 	GetItem(name string, requestedVersion int) (Rmap, int, error)
 	MakeAsset(name, id string, version int) (Rmap, error)
-	MarkAssetAsExisting(name, id string) error
+	MarkAssetAsExisting(name, id string, data Rmap) error
 	GetAsset(name, id string, resolve bool, failOnNotFound bool) (Rmap, error)
 	ListItems() ([]string, error)
 	ListSingletons() ([]string, error)
@@ -518,16 +518,16 @@ func (r *Registry) getAssetCompositeKey(name, id string) (string, error) {
 }
 
 // MarkAssetAsExisting emulates asset existence for WalkReferences and other methods (old TXS refactor)
-func (r *Registry) MarkAssetAsExisting(name, id string) error {
+// data are presented in ChangeSet as were sent by the client and are accessible
+// after executing business logic, changeSet version is replaced by its result
+func (r *Registry) MarkAssetAsExisting(name, id string, data Rmap) error {
 	key, err := r.getAssetCompositeKey(name, id)
 	if err != nil {
 		return errors.Wrap(err, "r.getAssetCompositeKey() failed")
 	}
 
-	// store to cache and to ChangeSet with empty value (not determined yet, blogic must be executed first)
-	// this is to allow WalkReferences to allow ref as valid on different asset, even when the TX is not yet committed
-	r.aCache.Add(key, NewEmpty())
-	r.changeSet[key] = NewEmpty()
+	r.aCache.Add(key, data)
+	r.changeSet[key] = data
 
 	return nil
 }
