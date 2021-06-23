@@ -395,7 +395,7 @@ func assetCreateBackend(ctx ContextInterface, now time.Time, name string, data s
 		}
 	}
 
-	if err := ctx.GetRegistry().MarkAssetAsExisting(name, id); err != nil {
+	if err := ctx.GetRegistry().MarkAssetAsExisting(name, id, patch); err != nil {
 		return "", errors.Wrap(err, "reg.MarkAssetAsExisting() failed")
 	}
 
