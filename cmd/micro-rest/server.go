@@ -10,6 +10,8 @@ import (
 	"github.com/KompiTech/fabric-cc-core/v2/internal/micro-rest"
 )
 
+const jwkPubKeyEnv = "JWK_PUB_KEY"
+
 func main() {
 	var port int
 
@@ -19,9 +21,22 @@ func main() {
 		var err error
 		port, err = strconv.Atoi(os.Args[1])
 		if err != nil {
-			log.Print(err)
+			log.Fatal(err)
 		}
 	}
+
+	jwkPubKeyPath, jwkDefined := os.LookupEnv(jwkPubKeyEnv)
+	if jwkDefined {
+		jwkh, err := micro_rest.NewJWKSHandler(jwkPubKeyPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// when JWK pubkey is defined in env, provide well-known route also
+		// useful for integration testing with other APIs and their tokens
+		http.HandleFunc("/.well-known/jwks.json", jwkh.WellKnownHandler)
+	}
+
 	http.HandleFunc("/api/v1/identities/", micro_rest.IdentityHandler)
 	http.HandleFunc("/api/v1/registries/", micro_rest.RegistryHandler)
 	http.HandleFunc("/api/v1/assets/", micro_rest.AssetHandler)
