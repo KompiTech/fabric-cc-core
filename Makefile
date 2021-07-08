@@ -1,5 +1,3 @@
-export GONOSUMDB = "github.com/cucumber/godog"
-
 test ::
 	go test -v ./pkg/...
 
