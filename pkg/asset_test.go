@@ -231,6 +231,24 @@ var _ = Describe("asset* method family tests", func() {
 			tctx.Error("patch contains service key(s)", "assetCreate", "mockincident", req.Bytes(), -1, "")
 		})
 
+		It("Should allow client to set UUID in asset body", func() {
+			req := rmap.NewFromMap(map[string]interface{}{
+				konst.AssetIdKey: "0d5fb738-6511-4109-bd13-61dd1a33bcc5",
+				"description":         "xyz",
+			})
+			inc := tctx.Rmap("assetCreate", "mockincident", req.Bytes(), -1, "")
+			Expect(inc.Mapa["uuid"]).To(Equal(req.Mapa["uuid"]))
+		})
+
+		It("Should return error if UUID from asset body and method param are different", func() {
+			req := rmap.NewFromMap(map[string]interface{}{
+				konst.AssetIdKey: "0d5fb738-6511-4109-bd13-61dd1a33bcc5",
+				"description":         "xyz",
+			})
+			// UUID (last parameter), differs
+			tctx.Error("id from CC param: 0d5fb738-6511-4109-bd13-61dd1a33bcc6 does not match id in data: 0d5fb738-6511-4109-bd13-61dd1a33bcc5", "assetCreate", "mockincident", req.Bytes(), -1, "0d5fb738-6511-4109-bd13-61dd1a33bcc6")
+		})
+
 		It("Should work with empty input", func() {
 			// schema error, NOT unmarshal error, working as intended
 			tctx.Error("reg.PutAsset() failed: asset.ValidateSchema() failed on assetName: mockincident", "assetCreate", "mockincident", "", -1, "")
