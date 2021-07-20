@@ -236,7 +236,8 @@ var _ = Describe("asset* method family tests", func() {
 				konst.AssetIdKey: "0d5fb738-6511-4109-bd13-61dd1a33bcc5",
 				"description":         "xyz",
 			})
-			tctx.Ok("assetCreate", "mockincident", req.Bytes(), -1, "")
+			inc := tctx.Rmap("assetCreate", "mockincident", req.Bytes(), -1, "")
+			Expect(inc.Mapa["uuid"]).To(Equal(req.Mapa["uuid"]))
 		})
 
 		It("Should return error if UUID from asset body and method param are different", func() {
