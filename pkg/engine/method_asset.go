@@ -355,6 +355,7 @@ func assetCreateBackend(ctx ContextInterface, now time.Time, name string, data s
 			}
 
 			delete(patch.Mapa, AssetIdKey) // delete id from patch, it will be added when creating asset
+			id = idInData
 		} else {
 			// client did not sent id in data
 			if id == "" {
