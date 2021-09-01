@@ -120,6 +120,7 @@ func WaitForCouch() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	req.Header.Set("Connection", "close")
 
 	// wait for couchdb to return 200
 	for {
@@ -146,6 +147,7 @@ func InitSysDBs() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	req.Header.Set("Connection", "close")
 	req.SetBasicAuth(username, password)
 	_, _ = client.Do(req)
 
@@ -153,6 +155,7 @@ func InitSysDBs() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	req.Header.Set("Connection", "close")
 	req.SetBasicAuth(username, password)
 	_, _ = client.Do(req)
 
@@ -160,6 +163,7 @@ func InitSysDBs() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	req.Header.Set("Connection", "close")
 	req.SetBasicAuth(username, password)
 	_, _ = client.Do(req)
 }

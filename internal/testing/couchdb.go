@@ -84,7 +84,8 @@ func (cdb *CouchDBMock) auth() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	req.Header.Add("content-Type", "application/json")
+	req.Header.Set("content-Type", "application/json")
+	req.Header.Set("Connection", "close")
 
 	resp, err := cdb.httpClient.Do(req)
 	if err != nil {
@@ -215,6 +216,7 @@ func (cdb *CouchDBMock) makeRequest(method, path string, body io.Reader) *http.R
 		log.Fatal(err)
 	}
 
+	req.Header.Set("Connection", "close")
 	req.AddCookie(cdb.authCookie)
 
 	if body != nil {
