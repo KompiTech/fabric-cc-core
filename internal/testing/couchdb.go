@@ -24,7 +24,7 @@ const (
 	CouchDBDataDir               = "/opt/couchdb/data"    // path to data directory for CouchDB inside container
 	CouchDBInternalPort          = "5984"                 // port inside docker container which is exposed to host. Should be CouchDB default: 5984
 	CouchDBExternalPort          = "8888"                 // port number which is exposed on host machine to access CouchDB API
-	CouchDBAddress               = "http://localhost:" + CouchDBExternalPort
+	CouchDBAddress               = "http://127.0.0.1:" + CouchDBExternalPort
 	MockChannelPrefix            = "mockchannel"
 	MockChaincodeName            = "itsm"
 	CouchDBMetaInfDir            = "META-INF/statedb/couchdb"         // location of state indexes
