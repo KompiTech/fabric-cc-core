@@ -91,6 +91,8 @@ func (cdb *CouchDBMock) auth() {
 		log.Fatal(err)
 	}
 
+	defer func() {_ = resp.Body.Close()}()
+
 	if resp.StatusCode != 200 {
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.Fatalf("POST %s %d, response body: %s", url, resp.StatusCode, body)
@@ -176,7 +178,6 @@ func (cdb *CouchDBMock) createDB(dbName string) {
 	if resp.StatusCode == 412 {
 		// DB already exists, just remove it and create again
 		deleteResp := cdb.makeRequest("DELETE", path, nil)
-
 		defer func() { _ = deleteResp.Body.Close() }()
 
 		deleteBody, err := ioutil.ReadAll(deleteResp.Body)
@@ -189,7 +190,6 @@ func (cdb *CouchDBMock) createDB(dbName string) {
 		}
 
 		createResp := cdb.makeRequest("PUT", path, nil)
-
 		defer func() { _ = createResp.Body.Close() }()
 
 		createBody, err := ioutil.ReadAll(createResp.Body)
