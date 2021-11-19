@@ -19,7 +19,7 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.11.0
+	github.com/onsi/gomega v1.17.0
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/pkg/errors v0.9.1
 	github.com/shopspring/decimal v1.3.1 // indirect
