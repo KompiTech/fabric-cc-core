@@ -31,6 +31,8 @@ const (
 	IdentityRolesKey  = "roles"    // key in identity asset with refs to roles
 	RoleAssetName     = "role"     // name of asset storing role
 
+	RoleIsSystemKey = "is_system_role" // key in role asset that stores bool with system status. This must match RoleSchema below
+
 	QueryFieldsKey   = "fields"
 	QuerySelectorKey = "selector"
 	QueryBookmarkKey = "bookmark"
@@ -207,6 +209,10 @@ const RoleSchema = `{
       "description": "Name of the role",
       "type": "string"
     },
+	"is_system_role": {
+      "description": "Updating system roles requires update_system grant",
+      "type": "boolean"
+    },
     "grants": { "$ref": "#/$defs/grants" },
     "overrides": { "$ref": "#/$defs/overrides" }
   },
@@ -247,7 +253,11 @@ const SchemaDefinitions = `{
     "type": "object",
     "properties": {
       "object": { "$ref": "#/$defs/object" },
-      "action": { "$ref": "#/$defs/action" }
+      "action": { "$ref": "#/$defs/action" },
+      "description": {
+        "type": "string",
+        "description": "Optional description of grant"
+      }
     },
     "required": [
       "object", "action"

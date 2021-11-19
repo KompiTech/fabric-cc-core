@@ -62,6 +62,34 @@ var _ = Describe("role* method family tests", func() {
 			Expect(role).To(HaveKeyWithValue("grants", grants))
 			Expect(role).To(HaveKeyWithValue("overrides", overrides))
 		})
+
+		Context("when creating system role (is_system_role = true)", func() {
+			var patch = rmap.NewFromMap(map[string]interface{}{"name": "System role", "is_system_role": true})
+
+			It("Should require create_system action granted", func() {
+				roleUUID := "8466c3d5-1ff5-dfa5-fb3a-4d74ee940eb0"
+				tctx.SetActor("ordinaryUser")
+				expectedErrMsg := fmt.Sprintf("permission denied, sub: %s, obj: %s, act: create_system", tctx.GetCurrentActorFingerprint(), "/role/"+roleUUID)
+				tctx.Error(expectedErrMsg, "assetCreate", "role", patch.Bytes(), -1, roleUUID)
+			})
+
+			It("Should create role when create_system action is granted", func() {
+				sysRoleCreator := rmap.NewFromMap(map[string]interface{}{
+					"name": "Sys Role creator",
+					"grants": []map[string]interface{}{{
+						"object": "/role/*",
+						"action": "create_system",
+					}},
+				})
+				roleUpdaterID := MustGetID(tctx.Rmap("assetCreate", "role", sysRoleCreator.Bytes(), -1, ""))
+				ordinaryUserIdentityPatch := rmap.NewFromMap(map[string]interface{}{"roles": []interface{}{roleUpdaterID}})
+				tctx.Ok("assetUpdate", "identity", tctx.GetActorFingerprint("ordinaryUser"), ordinaryUserIdentityPatch.Bytes())
+
+				tctx.SetActor("ordinaryUser")
+				sysRole := tctx.Rmap("assetCreate", "role", patch.Bytes(), -1, "")
+				Expect(sysRole.Mapa).To(HaveKeyWithValue("is_system_role", true))
+			})
+		})
 	})
 
 	Describe("Call to CC method assetUpdate(role, ...)", func() {
@@ -94,6 +122,56 @@ var _ = Describe("role* method family tests", func() {
 			overrides := role["overrides"].([]interface{})
 			Expect(role).To(HaveKeyWithValue("grants", grants))
 			Expect(role).To(HaveKeyWithValue("overrides", overrides))
+		})
+
+		Context("when role has is_system_role bool set to true", func() {
+			var (
+				systemID string
+				patch = rmap.NewFromMap(map[string]interface{}{
+					"name": "Changed ROLE",
+				})
+			)
+
+			BeforeEach(func() {
+				systemRoleReqID := rmap.NewFromMap(map[string]interface{}{
+					"name": "A system role",
+					"is_system_role": true,
+				})
+				systemID = MustGetID(tctx.Rmap("assetCreate", "role", systemRoleReqID.Bytes(), -1, ""))
+			})
+
+			It("Should not allow updating system role, even if user has /role/* update granted", func() {
+				roleUpdater := rmap.NewFromMap(map[string]interface{}{
+					"name": "Role updater",
+					"grants": []map[string]interface{}{{
+						"object": "/role/*",
+						"action": "update",
+					}},
+				})
+				roleUpdaterID := MustGetID(tctx.Rmap("assetCreate", "role", roleUpdater.Bytes(), -1, ""))
+				ordinaryUserIdentityPatch := rmap.NewFromMap(map[string]interface{}{"roles": []interface{}{roleUpdaterID}})
+				tctx.Ok("assetUpdate", "identity", tctx.GetActorFingerprint("ordinaryUser"), ordinaryUserIdentityPatch.Bytes())
+
+				tctx.SetActor("ordinaryUser")
+				expectedErrMsg := fmt.Sprintf("permission denied, sub: %s, obj: %s, act: update_system", tctx.GetCurrentActorFingerprint(), "/role/"+systemID)
+				tctx.Error(expectedErrMsg, "assetUpdate", "role", systemID, patch.Bytes())
+			})
+
+			It("Should allow updating system role when granted update_system permission", func() {
+				sysRoleUpdater := rmap.NewFromMap(map[string]interface{}{
+					"name": "Role updater",
+					"grants": []map[string]interface{}{{
+						"object": "/role/*",
+						"action": "update_system",
+					}},
+				})
+				roleUpdaterID := MustGetID(tctx.Rmap("assetCreate", "role", sysRoleUpdater.Bytes(), -1, ""))
+				ordinaryUserIdentityPatch := rmap.NewFromMap(map[string]interface{}{"roles": []interface{}{roleUpdaterID}})
+				tctx.Ok("assetUpdate", "identity", tctx.GetActorFingerprint("ordinaryUser"), ordinaryUserIdentityPatch.Bytes())
+
+				tctx.SetActor("ordinaryUser")
+				tctx.Ok("assetUpdate", "role", systemID, patch.Bytes())
+			})
 		})
 	})
 

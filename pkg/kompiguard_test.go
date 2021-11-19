@@ -39,6 +39,18 @@ var _ = Describe("kompiguard", func() {
 			tctx.Ok("assetGet", "mockincident", incidentUUID, false, rmap.NewEmpty().Bytes())
 			tctx.Ok("assetGet", "mockrequest", requestUUID, false, rmap.NewEmpty().Bytes())
 		})
+
+		It("Should allow description to grants", func() {
+			role := rmap.NewFromMap(map[string]interface{}{
+				"name": "All reader",
+				"grants": []map[string]interface{}{{
+					"description": "Read all objects",
+					"object": "*",
+					"action": "read",
+				}},
+			})
+			tctx.Ok("assetCreate", "role", role.Bytes(), -1, "")
+		})
 	})
 
 	Describe("when controlling access to functions", func() {
