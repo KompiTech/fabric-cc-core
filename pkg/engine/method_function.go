@@ -74,5 +74,9 @@ func functionBackend(ctx ContextInterface, name string, isInvoke bool, data stri
 		return "", errors.Wrap(err, "fexec.Execute() failed")
 	}
 
-	return string(output.WrappedResultBytes()), nil
+	if output.Exists("result") {
+		return string(output.Bytes()), nil
+	} else {
+		return string(output.WrappedResultBytes()), nil
+	}
 }

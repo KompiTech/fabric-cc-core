@@ -162,6 +162,7 @@ func (stub *MockStub) GetFunctionAndParameters() (function string, params []stri
 // This is important when chaincodes invoke each other.
 // MockStub doesn't support concurrent transactions at present.
 func (stub *MockStub) MockTransactionStart(txid string) {
+	stub.isRO = false
 	stub.TxID = txid
 	stub.setSignedProposal(&peer.SignedProposal{})
 
@@ -197,7 +198,6 @@ func (stub *MockStub) MockInit(uuid string, args [][]byte) peer.Response {
 	stub.MockTransactionStart(uuid)
 	res := stub.Cc.Init(stub)
 	stub.MockTransactionEnd(uuid)
-	stub.isRO = false
 	return res
 }
 
@@ -208,7 +208,6 @@ func (stub *MockStub) MockInvoke(uuid string, args [][]byte) peer.Response {
 	stub.MockTransactionStart(uuid)
 	res := stub.Cc.Invoke(stub)
 	stub.MockTransactionEnd(uuid)
-	stub.isRO = false
 	return res
 }
 
@@ -224,7 +223,6 @@ func (stub *MockStub) MockInvokeWithSignedProposal(uuid string, args [][]byte, s
 	stub.signedProposal = sp
 	res := stub.Cc.Invoke(stub)
 	stub.MockTransactionEnd(uuid)
-	stub.isRO = false
 	return res
 }
 
@@ -298,7 +296,7 @@ func (stub *MockStub) GetPrivateDataByPartialCompositeKey(collection, objectType
 
 // GetPrivateDataQueryResult ...
 func (stub *MockStub) GetPrivateDataQueryResult(collection, query string) (shim.StateQueryIteratorInterface, error) {
-	stub.isRO = true
+	//stub.isRO = true
 	//TODO pageSize and bookmark is not supported by shim API yet
 	iterator, _ := stub.CouchDBMock.GetQueryResult(collection, query, 1000, "")
 	return iterator, nil
@@ -467,7 +465,7 @@ func (stub *MockStub) GetStateByPartialCompositeKeyWithPagination(objectType str
 // GetQueryResultWithPagination ...
 func (stub *MockStub) GetQueryResultWithPagination(query string, pageSize int32,
 	bookmark string) (shim.StateQueryIteratorInterface, *peer.QueryResponseMetadata, error) {
-	stub.isRO = true
+	//stub.isRO = true
 	iterator, metadata := stub.CouchDBMock.GetQueryResult("", query, pageSize, bookmark)
 	return iterator, metadata, nil
 }
