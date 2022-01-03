@@ -849,8 +849,8 @@ func (r *Registry) GetQueryIterator(name string, query Rmap, bookmark string, pa
 		return null, "", errors.Wrap(err, "query.SetJPtr() failed")
 	}
 
-	// make regexes case-insensitive always
-	if err := fixRegexes(query); err != nil {
+	// make couchdb-specific fixes to the query and sort
+	if err := fixQueryForCouchDB(query); err != nil {
 		return null, "", err
 	}
 
@@ -866,8 +866,10 @@ func (r *Registry) GetQueryIterator(name string, query Rmap, bookmark string, pa
 		return null, "", errors.Wrap(err, "registryItem.GetString() failed")
 	}
 
-	var metadata *pb.QueryResponseMetadata
-	var iter shim.StateQueryIteratorInterface
+	var (
+		metadata *pb.QueryResponseMetadata
+		iter     shim.StateQueryIteratorInterface
+	)
 
 	// get iter for correct DB
 	if destination == StateDestinationValue {
@@ -1360,61 +1362,4 @@ func (r *Registry) GetSingleton(name string, version int) (Rmap, int, error) {
 	}
 
 	return singleton, version, err
-}
-
-func fixRegexes(q Rmap) error {
-	rs, err := findRegexOperators(q.Mapa, []string{})
-	if err != nil {
-		return err
-	}
-
-	return addRegexPrefix(q, rs)
-}
-
-// returns list of all jsonptrs that have the $regex key
-func findRegexOperators(q map[string]interface{}, path []string) ([]string, error) {
-	res := []string{}
-
-	for k, v := range q {
-		if k == "$regex" {
-			_, isString := v.(string)
-			if isString {
-				res = append(res, "/"+strings.Join(append(path, k), "/"))
-			}
-		}
-
-		if subMap, isMap := v.(map[string]interface{}); isMap {
-			rop, err := findRegexOperators(subMap, append(path, k))
-			if err != nil {
-				return nil, err
-			}
-
-			res = append(res, rop...)
-		}
-	}
-
-	return res, nil
-}
-
-// adds (?i) to each $regex value (if it doesn't already start with it) to make it case-insensitive
-func addRegexPrefix(q Rmap, jptrs []string) error {
-	for _, jptr := range jptrs {
-		oldValue, err := q.GetJPtrString(jptr)
-		if err != nil {
-			return err
-		}
-
-		oldValue = strings.TrimSpace(oldValue)
-
-		if !strings.HasPrefix(oldValue, regexCaseInsensitive) {
-			// prefix is not present -> add it
-			newValue := regexCaseInsensitive + oldValue
-
-			if err := q.SetJPtr(jptr, newValue); err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
 }

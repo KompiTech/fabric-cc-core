@@ -30,7 +30,7 @@ func TestRegistry_FixRegexes(t *testing.T) {
 		},
 	})
 
-	err := fixRegexes(query)
+	err := fixQueryForCouchDB(query)
 	assert.Nil(t, err)
 	assert.Equal(t, "(?i)keke", query.MustGetJPtrString("/selector/something/$regex"))
 }
@@ -44,7 +44,7 @@ func TestRegistry_FixRegexes2(t *testing.T) {
 		},
 	})
 
-	err := fixRegexes(query)
+	err := fixQueryForCouchDB(query)
 	assert.Nil(t, err)
 	assert.Equal(t, "(?i)keke", query.MustGetJPtrString("/selector/something/$regex"))
 }

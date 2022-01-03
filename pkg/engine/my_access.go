@@ -194,7 +194,7 @@ func accessFuncImpl(ctx ContextInterface, identity rmap.Rmap, output rmap.Rmap) 
 
 	allAssets, err := reg.ListItems()
 	if err != nil {
-		return null, errors.Wrap(err, "reg.ListItems() failed")
+		return null, errors.Wrap(err, "reg.ListItemKinds() failed")
 	}
 
 	allFunctions := ctx.GetConfiguration().FunctionExecutor.List()

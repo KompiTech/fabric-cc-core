@@ -47,7 +47,7 @@ func registryListFrontend(ctx ContextInterface) (string, error) {
 
 	list, err := reg.ListItems()
 	if err != nil {
-		return "", errors.Wrap(err, "reg.ListItems() failed")
+		return "", errors.Wrap(err, "reg.ListItemKinds() failed")
 	}
 
 	output := rmap.NewFromMap(map[string]interface{}{
