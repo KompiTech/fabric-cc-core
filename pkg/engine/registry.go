@@ -16,7 +16,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-const CacheSize = 1000 // minimum is 1!
+const (
+	CacheSize            = 1000   // minimum is 1!
+	regexCaseInsensitive = "(?i)" // couchDB regex operator to make it case-insensitive
+)
 
 // Registry manages assets and singletons
 type Registry struct {
@@ -846,6 +849,11 @@ func (r *Registry) GetQueryIterator(name string, query Rmap, bookmark string, pa
 		return null, "", errors.Wrap(err, "query.SetJPtr() failed")
 	}
 
+	// make couchdb-specific fixes to the query and sort
+	if err := fixQueryForCouchDB(query); err != nil {
+		return null, "", err
+	}
+
 	// we assume that most of results from query will be assets with latest version present, so fetch it now
 	registryItem, _, err := r.GetItem(name, -1)
 	if err != nil {
@@ -858,8 +866,10 @@ func (r *Registry) GetQueryIterator(name string, query Rmap, bookmark string, pa
 		return null, "", errors.Wrap(err, "registryItem.GetString() failed")
 	}
 
-	var metadata *pb.QueryResponseMetadata
-	var iter shim.StateQueryIteratorInterface
+	var (
+		metadata *pb.QueryResponseMetadata
+		iter     shim.StateQueryIteratorInterface
+	)
 
 	// get iter for correct DB
 	if destination == StateDestinationValue {

@@ -3,7 +3,7 @@ module github.com/KompiTech/fabric-cc-core/v2
 go 1.14
 
 require (
-	github.com/KompiTech/rmap v1.14.0
+	github.com/KompiTech/rmap v1.18.0
 	github.com/casbin/casbin/v2 v2.28.4
 	github.com/evanphx/json-patch v4.9.0+incompatible // indirect
 	github.com/go-openapi/spec v0.20.3 // indirect
