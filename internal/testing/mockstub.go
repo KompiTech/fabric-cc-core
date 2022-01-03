@@ -296,7 +296,7 @@ func (stub *MockStub) GetPrivateDataByPartialCompositeKey(collection, objectType
 
 // GetPrivateDataQueryResult ...
 func (stub *MockStub) GetPrivateDataQueryResult(collection, query string) (shim.StateQueryIteratorInterface, error) {
-	//stub.isRO = true
+	stub.isRO = true
 	//TODO pageSize and bookmark is not supported by shim API yet
 	iterator, _ := stub.CouchDBMock.GetQueryResult(collection, query, 1000, "")
 	return iterator, nil
@@ -465,7 +465,7 @@ func (stub *MockStub) GetStateByPartialCompositeKeyWithPagination(objectType str
 // GetQueryResultWithPagination ...
 func (stub *MockStub) GetQueryResultWithPagination(query string, pageSize int32,
 	bookmark string) (shim.StateQueryIteratorInterface, *peer.QueryResponseMetadata, error) {
-	//stub.isRO = true
+	stub.isRO = true
 	iterator, metadata := stub.CouchDBMock.GetQueryResult("", query, pageSize, bookmark)
 	return iterator, metadata, nil
 }

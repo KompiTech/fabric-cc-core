@@ -234,7 +234,7 @@ var _ = Describe("asset* method family tests", func() {
 		It("Should allow client to set UUID in asset body", func() {
 			req := rmap.NewFromMap(map[string]interface{}{
 				konst.AssetIdKey: "0d5fb738-6511-4109-bd13-61dd1a33bcc5",
-				"description":         "xyz",
+				"description":    "xyz",
 			})
 			inc := tctx.Rmap("assetCreate", "mockincident", req.Bytes(), -1, "")
 			Expect(inc.Mapa["uuid"]).To(Equal(req.Mapa["uuid"]))
@@ -243,7 +243,7 @@ var _ = Describe("asset* method family tests", func() {
 		It("Should return error if UUID from asset body and method param are different", func() {
 			req := rmap.NewFromMap(map[string]interface{}{
 				konst.AssetIdKey: "0d5fb738-6511-4109-bd13-61dd1a33bcc5",
-				"description":         "xyz",
+				"description":    "xyz",
 			})
 			// UUID (last parameter), differs
 			tctx.Error("id from CC param: 0d5fb738-6511-4109-bd13-61dd1a33bcc6 does not match id in data: 0d5fb738-6511-4109-bd13-61dd1a33bcc5", "assetCreate", "mockincident", req.Bytes(), -1, "0d5fb738-6511-4109-bd13-61dd1a33bcc6")
@@ -474,6 +474,61 @@ var _ = Describe("asset* method family tests", func() {
 			})
 
 			tctx.Error("unexpected key(s) in query: email,zzz", "assetQuery", "incident", query.Bytes(), false)
+		})
+
+		Context("when doing fulltext searches", func() {
+			BeforeEach(func() {
+				tctx.Ok("assetCreate", "mockcomment", rmap.NewFromMap(map[string]interface{}{"text": "SomE TEXT DIF"}).Bytes(), -1, "")
+				tctx.Ok("assetCreate", "mockcomment", rmap.NewFromMap(map[string]interface{}{"text": "DifferenT text"}).Bytes(), -1, "")
+				tctx.Ok("assetCreate", "mockcomment", rmap.NewFromMap(map[string]interface{}{"text": "numbers diF"}).Bytes(), -1, "")
+				tctx.Ok("assetCreate", "mockcomment", rmap.NewFromMap(map[string]interface{}{"text": "dif"}).Bytes(), -1, "")
+			})
+
+			It("Should be case-insensitive without couchDB required prefix", func() {
+				query := rmap.NewFromMap(map[string]interface{}{
+					"selector": map[string]interface{}{"text": map[string]interface{}{"$regex": "tExT"}},
+				})
+
+				response := tctx.RmapNoResult("assetQuery", "mockcomment", query.Bytes(), false)
+				Expect(response.MustGetIterable("result")).To(HaveLen(2))
+
+				query = rmap.NewFromMap(map[string]interface{}{
+					"selector": map[string]interface{}{"text": map[string]interface{}{"$regex": "dIf"}},
+				})
+
+				response = tctx.RmapNoResult("assetQuery", "mockcomment", query.Bytes(), false)
+				Expect(response.MustGetIterable("result")).To(HaveLen(4))
+
+				query = rmap.NewFromMap(map[string]interface{}{
+					"selector": map[string]interface{}{"text": map[string]interface{}{"$regex": "XYZ"}},
+				})
+
+				response = tctx.RmapNoResult("assetQuery", "mockcomment", query.Bytes(), false)
+				Expect(response.MustGetIterable("result")).To(HaveLen(0))
+			})
+
+			It("Should work with couchDB prefix present", func() {
+				query := rmap.NewFromMap(map[string]interface{}{
+					"selector": map[string]interface{}{"text": map[string]interface{}{"$regex": "(?i)tExT"}},
+				})
+
+				response := tctx.RmapNoResult("assetQuery", "mockcomment", query.Bytes(), false)
+				Expect(response.MustGetIterable("result")).To(HaveLen(2))
+
+				query = rmap.NewFromMap(map[string]interface{}{
+					"selector": map[string]interface{}{"text": map[string]interface{}{"$regex": "(?i)dIf"}},
+				})
+
+				response = tctx.RmapNoResult("assetQuery", "mockcomment", query.Bytes(), false)
+				Expect(response.MustGetIterable("result")).To(HaveLen(4))
+
+				query = rmap.NewFromMap(map[string]interface{}{
+					"selector": map[string]interface{}{"text": map[string]interface{}{"$regex": "(?i)XYZ"}},
+				})
+
+				response = tctx.RmapNoResult("assetQuery", "mockcomment", query.Bytes(), false)
+				Expect(response.MustGetIterable("result")).To(HaveLen(0))
+			})
 		})
 	})
 
