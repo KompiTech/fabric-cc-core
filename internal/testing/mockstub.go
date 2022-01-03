@@ -162,7 +162,6 @@ func (stub *MockStub) GetFunctionAndParameters() (function string, params []stri
 // This is important when chaincodes invoke each other.
 // MockStub doesn't support concurrent transactions at present.
 func (stub *MockStub) MockTransactionStart(txid string) {
-	stub.isRO = false
 	stub.TxID = txid
 	stub.setSignedProposal(&peer.SignedProposal{})
 
@@ -198,6 +197,7 @@ func (stub *MockStub) MockInit(uuid string, args [][]byte) peer.Response {
 	stub.MockTransactionStart(uuid)
 	res := stub.Cc.Init(stub)
 	stub.MockTransactionEnd(uuid)
+	stub.isRO = false
 	return res
 }
 
@@ -208,6 +208,7 @@ func (stub *MockStub) MockInvoke(uuid string, args [][]byte) peer.Response {
 	stub.MockTransactionStart(uuid)
 	res := stub.Cc.Invoke(stub)
 	stub.MockTransactionEnd(uuid)
+	stub.isRO = false
 	return res
 }
 
@@ -223,6 +224,7 @@ func (stub *MockStub) MockInvokeWithSignedProposal(uuid string, args [][]byte, s
 	stub.signedProposal = sp
 	res := stub.Cc.Invoke(stub)
 	stub.MockTransactionEnd(uuid)
+	stub.isRO = false
 	return res
 }
 
