@@ -199,11 +199,6 @@ func (r resolver) walkReferences(ctx ContextInterface, thisAssetName string, pat
 				}
 			}
 
-			// replace the key with its resolved value
-			if err := root.SetJPtr(pathJPtr, target); err != nil {
-				return errors.Wrap(err, "root.SetJPtr() failed")
-			}
-
 			// if data is present in params, make it accessible in blogic
 			// if data is not bytes, you will get a nice traceback here
 			var dataR *Rmap
@@ -228,6 +223,11 @@ func (r resolver) walkReferences(ctx ContextInterface, thisAssetName string, pat
 			target, err = ctx.GetConfiguration().BusinessExecutor.Execute(ctx, AfterResolve, dataR, target)
 			if err != nil {
 				return errors.Wrap(err, `ctx.GetConfiguration().BusinessExecutor.Execute(AfterResolve) failed`)
+			}
+
+			// replace the key with its resolved value
+			if err := root.SetJPtr(pathJPtr, target); err != nil {
+				return errors.Wrap(err, "root.SetJPtr() failed")
 			}
 		}
 	}
